@@ -438,14 +438,11 @@ export default function DashboardContent() {
 
     const submit_hotspot = () => {
         if (draw_list.length > 0) {
-            
             console.log('submit_hotspot', draw_list.length)
             collection = []
             for (let n = 0; n < draw_list.length; n++) {
-                // console.log(1123123123)
                 var geojson = draw_list[n].toGeoJSON()
                 geojson.properties.value = 1
-                // console.log(111, JSON.stringify(geojson))
                 collection.push(JSON.stringify(geojson))
             }
 
