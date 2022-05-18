@@ -334,7 +334,7 @@ export default function DashboardContent() {
             <div>
                 <TextField label="Search field" type="search" inputRef={value_search} />
                 <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_search_A} >Search AOI</Button>
-                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_geometry} >Submit Geometry</Button>
+                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} >Submit Geometry</Button>
             </div>
         )
     }
@@ -547,8 +547,8 @@ export default function DashboardContent() {
     var test22 = 0
     var test33 = 0
 
-    // draw_list is imported from drawtool.js
-    const submit_geometry = () => {
+    
+    const start_fire_pred = () => {
         // console.log(draw_list)
         // for (let i = 0; i < draw_list.length; i++) {
             //     candidate_geojson.push(draw_list[i].toGeoJSON())
@@ -568,6 +568,8 @@ export default function DashboardContent() {
                                             axios.get('https://' + config.GCP_EXT_IP + '/grass_10').then(res => {
                                                 axios.get('https://' + config.GCP_EXT_IP + '/grass_11').then(res => {
                                                     axios.get('https://' + config.GCP_EXT_IP + '/grass_12a').then(res => { test11 = res.data; if (test11 != 0) { L.geoJSON(res.data, { fillColor: 'red', weight: 2, opacity: 1, color: 'red', fillOpacity: 0.7 }).addTo(map) } })
+                                                    axios.get('https://' + config.GCP_EXT_IP + '/grass_12b').then(res => { test22 = res.data; if (test22 != 0) { L.geoJSON(res.data, { fillColor: 'orange', weight: 2, opacity: 1, color: 'orange', fillOpacity: 0.7 }).addTo(map) } })
+                                                    axios.get('https://' + config.GCP_EXT_IP + '/grass_12c').then(res => { test33 = res.data; if (test33 != 0) { L.geoJSON(res.data, { fillColor: 'yellow', weight: 2, opacity: 1, color: 'yellow', fillOpacity: 0.7 }).addTo(map) } })
                                                 })
                                             })  
                                         })
@@ -709,7 +711,7 @@ export default function DashboardContent() {
                                 <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
                                     <Box sx={{ marginTop: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', }}>
                                         <FormControl sx={{ m: 1, minWidth: 250 }}>
-                                            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} >การลุกลามของไฟ</Button>
+                                            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} onClick={start_fire_pred} >การลุกลามของไฟ</Button>
                                             <Button type="submit" fullWidth variant="contained" sx={{ mt: 1, mb: 2 }} >พื้นที่ชุมชน</Button>
                                             <Button type="submit" fullWidth variant="contained" sx={{ mt: 1, mb: 2 }} >ประเมินผลกระทบ</Button>
                                         </FormControl>
