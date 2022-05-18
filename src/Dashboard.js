@@ -278,7 +278,10 @@ export default function DashboardContent() {
                     if (typeof (res[0]) == 'undefined') {
                         // alert('location not found then use default coordinates')
                         console.log('location not found then use default coordinates')
-                        let rec = L.rectangle(L.latLng(g_lat, g_lon).toBounds(4000))
+                        
+                        // let rec = L.rectangle(L.latLng(g_lat, g_lon).toBounds(4000))
+                        let rec = L.rectangle(L.latLng(g_lat, g_lon).toBounds(20000))
+
                         rec.addTo(map)
                         layer_aoi.push(rec)
                         map.fitBounds(rec.getBounds())
@@ -295,7 +298,8 @@ export default function DashboardContent() {
                         g_lon = res[0].lon
                         console.log('location found', g_lat, g_lon)
                         // submit_search_B(g_lat, g_lon)
-                        let rec = L.rectangle(L.latLng(g_lat, g_lon).toBounds(4000))
+                        // let rec = L.rectangle(L.latLng(g_lat, g_lon).toBounds(4000))
+                        let rec = L.rectangle(L.latLng(g_lat, g_lon).toBounds(20000))
                         rec.addTo(map)
                         layer_aoi.push(rec)
                         map.fitBounds(rec.getBounds())
@@ -391,6 +395,7 @@ export default function DashboardContent() {
 
 
     const import_hotspot = () => {
+        console.log('asasdfasd import hotspot')
         // let rad = 1000000 // m^2
         // let rec = L.rectangle(L.latLng(g_lat, g_lon).toBounds(rad))
 
@@ -404,6 +409,15 @@ export default function DashboardContent() {
         var _today = new Date()
         _today = _today.getFullYear() + '-' + String(_today.getMonth() + 1).padStart(2, '0') + '-' + String(_today.getDate()).padStart(2, '0')
         
+        // _today = '2021-03-25'
+
+        // y1 = 18.854483124484304
+        // x1 = 98.71290241522325
+        // y2 = 18.839681563180076
+        // x2 = 98.72890781246448
+        // 18.839681563180076,98.72890781246448
+        // date1, date2 = '2021-03-25', '2021-03-26'
+        // date3, date4 = '2021-03-30', '2021-03-31'
         var url = [
             'http://firms.modaps.eosdis.nasa.gov/api/area/csv/' + config.FIRM_API_KEY + '/MODIS_NRT/' + _aoi + '/1/' + _today,
             'http://firms.modaps.eosdis.nasa.gov/api/area/csv/' + config.FIRM_API_KEY + '/MODIS_SP/' + _aoi + '/1/' + _today,
@@ -412,49 +426,63 @@ export default function DashboardContent() {
             'http://firms.modaps.eosdis.nasa.gov/api/area/csv/' + config.FIRM_API_KEY + '/VIIRS_SNPP_SP/' + _aoi + '/1/' + _today
         ]
 
+        var features_collection = {
+            "type": "FeatureCollection",
+            "features": [ ]
+        }
+
+        var feat = {
+            "type": "Feature",
+            "properties": { "value": 1 },
+            "geometry": { "type": "Point", "coordinates": [ ] }
+        }
+
         _get_axios_FIRMS(url)
             .then((_res) => {
-                let lat_lon = []
+                var feats = []
                 for (let i = 0; i < _res.length; i++) {
-                    if (_res[i].length!=0) {
-                        lat_lon.push(_res[i])
+                    if (_res[i].length > 0) {
+                        for (let j = 0; j < _res[i].length; j++) {
+                            feat.geometry.coordinates = [ parseFloat(_res[i][j][0]), parseFloat(_res[i][j][1]) ]
+                            feats.push(feat)
+                        }
                     }
                 }
-                _res.send('lat_lon', lat_lon)
+                features_collection.features = feats
+                // console.log(654564564987654, JSON.stringify(features_collection))
+                
+                axios.get('https://' + config.GCP_EXT_IP + '/test', { params: { 'features_collection': features_collection } }).then(res => { console.log('input draw list', res.data) })
+
             })
-        
     }
 
-    var geojson_point = {
-        "type": "Feature",
-        "geometry": {
-            "type": "Point",
-            "coordinates": [125.6, 10.1]
-        },
-        "properties": {
-            "value": 1
-        }
-    }
 
     const submit_hotspot = () => {
         if (draw_list.length > 0) {
-            console.log('submit_hotspot', draw_list.length)
+            // console.log('submit_hotspot', draw_list.length)
             collection = []
+
             for (let n = 0; n < draw_list.length; n++) {
                 var geojson = draw_list[n].toGeoJSON()
                 geojson.properties.value = 1
                 collection.push(JSON.stringify(geojson))
             }
-
-            console.log(321312312, collection)
+            
+            // console.log(321312312, collection)
 
             var features_collection = JSON.stringify({
                 type: 'FeatureCollection',
                 features: collection.map(JSON.parse)
             })
+            
+            // console.log(654564564987654, JSON.stringify(features_collection))
 
-            console.log(654564564, features_collection)
-
+            
+            
+            
+            
+            axios.get('https://' + config.GCP_EXT_IP + '/active_fires', { params: { 'features_collection': features_collection } }).then(res => { console.log('input draw list', res.data) })
+            
             // var candy = []
             // for (let n = 0; n < draw_list.length; n++) {
             //     if (typeof(draw_list[n]._latlng) != 'undefined') { // a point
@@ -483,7 +511,6 @@ export default function DashboardContent() {
 
             // candy = JSON.stringify(candy)
             // console.log(candy)
-            axios.get('https://' + config.GCP_EXT_IP + '/test', { params: { 'features_collection': features_collection } }).then(res => { console.log('input draw list', res.data) })
             
         }
         // else {
@@ -536,9 +563,15 @@ export default function DashboardContent() {
                         axios.get('https://' + config.GCP_EXT_IP + '/grass_5').then(res => {
                             axios.get('https://' + config.GCP_EXT_IP + '/grass_6').then(res => {
                                 axios.get('https://' + config.GCP_EXT_IP + '/grass_7').then(res => {
-                                    axios.get('https://' + config.GCP_EXT_IP + '/grass_8a').then(res => { test11 = res.data; if (test11 != 0) { L.geoJSON(res.data, { fillColor: 'red', weight: 2, opacity: 1, color: 'red', fillOpacity: 0.7 }).addTo(map) } })
-                                    axios.get('https://' + config.GCP_EXT_IP + '/grass_8b').then(res => { test22 = res.data; if (test22 != 0) { L.geoJSON(res.data, { fillColor: 'orange', weight: 2, opacity: 1, color: 'orange', fillOpacity: 0.7 }).addTo(map) } })
-                                    axios.get('https://' + config.GCP_EXT_IP + '/grass_8c').then(res => { test33 = res.data; if (test33 != 0) { L.geoJSON(res.data, { fillColor: 'yellow', weight: 2, opacity: 1, color: 'yellow', fillOpacity: 0.7 }).addTo(map) } })
+                                    axios.get('https://' + config.GCP_EXT_IP + '/grass_8').then(res => {
+                                        axios.get('https://' + config.GCP_EXT_IP + '/grass_9').then(res => {
+                                            axios.get('https://' + config.GCP_EXT_IP + '/grass_10').then(res => {
+                                                axios.get('https://' + config.GCP_EXT_IP + '/grass_11').then(res => {
+                                                    axios.get('https://' + config.GCP_EXT_IP + '/grass_12a').then(res => { test11 = res.data; if (test11 != 0) { L.geoJSON(res.data, { fillColor: 'red', weight: 2, opacity: 1, color: 'red', fillOpacity: 0.7 }).addTo(map) } })
+                                                })
+                                            })  
+                                        })
+                                    })    
                                 })
                             })
                         })
@@ -547,9 +580,11 @@ export default function DashboardContent() {
             })
         })
 
-
+// axios.get('https://' + config.GCP_EXT_IP + '/grass_8a').then(res => { test11 = res.data; if (test11 != 0) { L.geoJSON(res.data, { fillColor: 'red', weight: 2, opacity: 1, color: 'red', fillOpacity: 0.7 }).addTo(map) } })
+                                    // axios.get('https://' + config.GCP_EXT_IP + '/grass_8b').then(res => { test22 = res.data; if (test22 != 0) { L.geoJSON(res.data, { fillColor: 'orange', weight: 2, opacity: 1, color: 'orange', fillOpacity: 0.7 }).addTo(map) } })
+                                    // axios.get('https://' + config.GCP_EXT_IP + '/grass_8c').then(res => { test33 = res.data; console.log('answer  --> ', test33); if (test33 != 0) { L.geoJSON(res.data, { fillColor: 'yellow', weight: 2, opacity: 1, color: 'yellow', fillOpacity: 0.7 }).addTo(map) } })
         
-        // 18.85021771579519,98.72216402467477
+        
 
         
         // axios.get('https://' + GCP_EXT_IP + '/grass_8a')
