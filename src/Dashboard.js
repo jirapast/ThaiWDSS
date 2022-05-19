@@ -280,7 +280,7 @@ export default function DashboardContent() {
                         console.log('location not found then use default coordinates')
                         
                         // let rec = L.rectangle(L.latLng(g_lat, g_lon).toBounds(4000))
-                        let rec = L.rectangle(L.latLng(g_lat, g_lon).toBounds(20000))
+                        let rec = L.rectangle(L.latLng(g_lat, g_lon).toBounds(4000))
 
                         rec.addTo(map)
                         layer_aoi.push(rec)
@@ -299,7 +299,7 @@ export default function DashboardContent() {
                         console.log('location found', g_lat, g_lon)
                         // submit_search_B(g_lat, g_lon)
                         // let rec = L.rectangle(L.latLng(g_lat, g_lon).toBounds(4000))
-                        let rec = L.rectangle(L.latLng(g_lat, g_lon).toBounds(20000))
+                        let rec = L.rectangle(L.latLng(g_lat, g_lon).toBounds(4000))
                         rec.addTo(map)
                         layer_aoi.push(rec)
                         map.fitBounds(rec.getBounds())
@@ -334,9 +334,28 @@ export default function DashboardContent() {
             <div>
                 <TextField label="Search field" type="search" inputRef={value_search} />
                 <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_search_A} >Search AOI</Button>
-                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} >Submit Geometry</Button>
+                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_geometry}>Submit Geometry</Button>
             </div>
         )
+    }
+
+    var layers = []
+
+    const submit_geometry = () => {
+        console.log(1231231232131, 'layer', layers)
+        for (let n = 0; n < layers.length; n++) {
+            var layer = layers[n]
+            map.removeLayer(layer)
+        }
+        // map.eachLayer(function(layer) {
+        //     var layers = [];
+        //     map.eachLayer(function (layer) {
+        //         if (layer instanceof L.TileLayer)
+        //             layers.push(layer);
+        //     });
+        layers = []
+        console.log(1231231232131, 'layer', layers)
+        // })
     }
     
 
@@ -518,6 +537,22 @@ export default function DashboardContent() {
         // }
     }
 
+    const submit_fire_break = () => {
+        if (draw_list.length > 0) {
+            collection = []
+            for (let n = 0; n < draw_list.length; n++) {
+                var geojson = draw_list[n].toGeoJSON()
+                geojson.properties.value = 1
+                collection.push(JSON.stringify(geojson))
+            }
+            var features_collection = JSON.stringify({
+                type: 'FeatureCollection',
+                features: collection.map(JSON.parse)
+            })
+            axios.get('https://' + config.GCP_EXT_IP + '/fire_break', { params: { 'features_collection': features_collection } }).then(res => { console.log('submit fuel break', res.data) })
+        }
+    }
+
 
     const import_land_cover = () => {
         console.log('import_land_cover')
@@ -567,9 +602,28 @@ export default function DashboardContent() {
                                         axios.get('https://' + config.GCP_EXT_IP + '/grass_9').then(res => {
                                             axios.get('https://' + config.GCP_EXT_IP + '/grass_10').then(res => {
                                                 axios.get('https://' + config.GCP_EXT_IP + '/grass_11').then(res => {
-                                                    axios.get('https://' + config.GCP_EXT_IP + '/grass_12a').then(res => { test11 = res.data; if (test11 != 0) { L.geoJSON(res.data, { fillColor: 'red', weight: 2, opacity: 1, color: 'red', fillOpacity: 0.7 }).addTo(map) } })
-                                                    axios.get('https://' + config.GCP_EXT_IP + '/grass_12b').then(res => { test22 = res.data; if (test22 != 0) { L.geoJSON(res.data, { fillColor: 'orange', weight: 2, opacity: 1, color: 'orange', fillOpacity: 0.7 }).addTo(map) } })
-                                                    axios.get('https://' + config.GCP_EXT_IP + '/grass_12c').then(res => { test33 = res.data; if (test33 != 0) { L.geoJSON(res.data, { fillColor: 'yellow', weight: 2, opacity: 1, color: 'yellow', fillOpacity: 0.7 }).addTo(map) } })
+                                                    axios.get('https://' + config.GCP_EXT_IP + '/grass_12a')
+                                                        .then(res => { 
+                                                            test11 = res.data; 
+                                                            if (test11 != 0) { 
+                                                                var layer = L.geoJSON(res.data, { fillColor: 'red', weight: 2, opacity: 1, color: 'red', fillOpacity: 0.7 })
+                                                                console.log('test11', test11)
+                                                                layer.addTo(map)
+                                                                layers.push(layer)
+                                                            }}
+                                                        )
+                                                    axios.get('https://' + config.GCP_EXT_IP + '/grass_12b')
+                                                        .then(res => {
+                                                            test22 = res.data;
+                                                            if (test22 != 0) {
+                                                                var layer = L.geoJSON(res.data, { fillColor: 'orange', weight: 2, opacity: 1, color: 'orange', fillOpacity: 0.7 })
+                                                                console.log('test22', test22)
+                                                                layer.addTo(map)
+                                                                layers.push(layer)
+                                                            }}
+                                                        )
+                                                    // axios.get('https://' + config.GCP_EXT_IP + '/grass_12b').then(res => { test22 = res.data; if (test22 != 0) { L.geoJSON(res.data, { fillColor: 'orange', weight: 2, opacity: 1, color: 'orange', fillOpacity: 0.7 }).addTo(map) } })
+                                                    // axios.get('https://' + config.GCP_EXT_IP + '/grass_12c').then(res => { test33 = res.data; if (test33 != 0) { L.geoJSON(res.data, { fillColor: 'yellow', weight: 2, opacity: 1, color: 'yellow', fillOpacity: 0.7 }).addTo(map) } })
                                                 })
                                             })  
                                         })
@@ -695,6 +749,7 @@ export default function DashboardContent() {
                                     <Box sx={{ marginTop: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', }}>
                                         <Typography component="h1" variant="h5">Land Cover</Typography>
                                         <FormControl sx={{ m: 1, minWidth: 250 }}>
+                                            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} onClick={submit_fire_break} >ยืนยันข้อมูลแนวป้องกันไฟ</Button>
                                             <Button type="submit" fullWidth variant="contained" sx={{ mt: 1, mb: 2 }} onClick={import_land_cover} >นำเข้าข้อมูลแบบจำลองเชื้อเพลิง</Button>
                                             <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} onClick={submit_land_cover} >เลือก</Button>
                                             <Select value={landcover} label="landcover" onChange={handle_change_Land_cover} >
