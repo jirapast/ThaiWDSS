@@ -578,7 +578,8 @@ export default function DashboardContent() {
                 geojson.properties.value = 1
                 collection.push(JSON.stringify(geojson))
             }
-            
+        } else {
+            return
         }
         
         var landcover_collection = {
@@ -602,12 +603,13 @@ export default function DashboardContent() {
         }
 
         landcover_collection = JSON.stringify(landcover_collection)
+        console.log('asdfsadfa', landcover_collection)
 
         axios.get('https://' + config.GCP_EXT_IP + '/land_cover', { params: { 'landcover_collection': landcover_collection } }).then(res => { console.log('submit landcover_collection', res.data) })
         
     }
     
-
+    
 
     // // geometry draw
     // var candidate_geojson = []
@@ -787,7 +789,7 @@ export default function DashboardContent() {
                                             {/* <Button type="submit" fullWidth variant="contained" sx={{ mt: 1, mb: 2 }} onClick={import_land_cover} >นำเข้าข้อมูลแบบจำลองเชื้อเพลิง</Button> */}
                                             <TextField required type='string' fullWidth variant="standard" inputRef={value_land_cover_list} helperText="เลือกข้อมูลแบบจำลองเชื้อเพลิง" />
                                             <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} onClick={submit_land_cover} >เลือก</Button>
-                                            <Select value={landcover} label="landcover" onChange={handle_change_Land_cover} >
+                                            {/* <Select value={landcover} label="landcover" onChange={handle_change_Land_cover} > */}
                                                 <MenuItem value={0}></MenuItem>
                                                 <MenuItem value={1}>ดิน</MenuItem>
                                                 <MenuItem value={2}>น้ำ</MenuItem>
