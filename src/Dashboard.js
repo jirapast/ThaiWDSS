@@ -347,22 +347,22 @@ export default function DashboardContent() {
             var layer = layers[n]
             map.removeLayer(layer)
         }
-        // map.eachLayer(function(layer) {
-        //     var layers = [];
-        //     map.eachLayer(function (layer) {
-        //         if (layer instanceof L.TileLayer)
-        //             layers.push(layer);
-        //     });
-        layers = []
-        console.log(1231231232131, 'layer', layers)
-        // })
+        map.eachLayer(function(layer) {
+            var layers = [];
+            map.eachLayer(function (layer) {
+                if (layer instanceof L.TileLayer)
+                    layers.push(layer);
+            })
+            layers = []
+            console.log(1231231232131, 'layer', layers)
+        })
     }
     
 
     // 
     const value_wind_spe = useRef()
     const value_wind_dir = useRef()
-
+    
     const submit_weather = () => {
         axios.get('http://api.weatherapi.com/v1/current.json?key=' + config.WEATHER_API_KEY + '&q=' + g_lat + ',' + g_lon + '&aqi=no')
             .then(res => {
@@ -536,7 +536,7 @@ export default function DashboardContent() {
         //     console.log('draw_list.length == 0')
         // }
     }
-
+    
     const submit_fire_break = () => {
         if (draw_list.length > 0) {
             collection = []
@@ -554,27 +554,61 @@ export default function DashboardContent() {
     }
 
 
-    const import_land_cover = () => {
-        console.log('import_land_cover')
-    }
+    // const import_land_cover = () => {
+        // console.log('import_land_cover')
+    // }
 
-    const [ landcover, setLandCover ] = React.useState('')
+    const [ landcover, setLandCover ] = React.useState(0)
 
     const handle_change_Land_cover = (event) => {
         setLandCover(event.target.value)
         // console.log(landcover, candidate_geojson.length)
     }
 
+
+    
+
+    const value_land_cover_list = useRef('')
+    
     const submit_land_cover = () => {
-        if (candidate_geojson.length <= land_cover_list.length) {
-            console.log('land cover list full')
-        } else {
-            land_cover_list.push(landcover)
-            console.log(candidate_geojson.length)
-            console.log(land_cover_list.length)
+        collection = []
+        if (draw_list.length > 0) {
+            for (let n = 0; n < draw_list.length; n++) {
+                var geojson = draw_list[n].toGeoJSON()
+                geojson.properties.value = 1
+                collection.push(JSON.stringify(geojson))
+            }
+            
         }
+        
+        var landcover_collection = {
+            type: 'FeatureCollection',
+            features: collection.map(JSON.parse)
+        }
+
+        var input_lc_list = value_land_cover_list.current.value
+        var ret_lc_list = []
+
+        if (input_lc_list != '') {
+            for (let n = 0; n < input_lc_list.split(',').length; n++) {
+                if (n < collection.length) {
+                    ret_lc_list.push(parseInt(input_lc_list.split(',')[n]))
+                }
+            }
+        }
+
+        for (let i = 0; i < landcover_collection.features.length; i++) {
+            landcover_collection.features[i].properties.value = ret_lc_list[i]
+        }
+
+        landcover_collection = JSON.stringify(landcover_collection)
+
+        axios.get('https://' + config.GCP_EXT_IP + '/land_cover', { params: { 'landcover_collection': landcover_collection } }).then(res => { console.log('submit landcover_collection', res.data) })
+        
     }
     
+
+
     // // geometry draw
     // var candidate_geojson = []
     // var layer_aoi = []
@@ -750,7 +784,8 @@ export default function DashboardContent() {
                                         <Typography component="h1" variant="h5">Land Cover</Typography>
                                         <FormControl sx={{ m: 1, minWidth: 250 }}>
                                             <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} onClick={submit_fire_break} >ยืนยันข้อมูลแนวป้องกันไฟ</Button>
-                                            <Button type="submit" fullWidth variant="contained" sx={{ mt: 1, mb: 2 }} onClick={import_land_cover} >นำเข้าข้อมูลแบบจำลองเชื้อเพลิง</Button>
+                                            {/* <Button type="submit" fullWidth variant="contained" sx={{ mt: 1, mb: 2 }} onClick={import_land_cover} >นำเข้าข้อมูลแบบจำลองเชื้อเพลิง</Button> */}
+                                            <TextField required type='string' fullWidth variant="standard" inputRef={value_land_cover_list} helperText="เลือกข้อมูลแบบจำลองเชื้อเพลิง" />
                                             <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} onClick={submit_land_cover} >เลือก</Button>
                                             <Select value={landcover} label="landcover" onChange={handle_change_Land_cover} >
                                                 <MenuItem value={0}></MenuItem>
