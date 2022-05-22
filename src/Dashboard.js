@@ -240,6 +240,8 @@ var layer_aoi = []
 
 // landcover ordered list
 var land_cover_list = []
+var all_pick_land_cover = []
+
 
 
 export default function DashboardContent() {
@@ -562,15 +564,30 @@ export default function DashboardContent() {
 
     const handle_change_Land_cover = (event) => {
         setLandCover(event.target.value)
-        // console.log(landcover, candidate_geojson.length)
+    }
+
+    const submit_land_cover = () => {
+        all_pick_land_cover.push(landcover)
+        console.log(333, all_pick_land_cover.length, )
+        console.log(333, all_pick_land_cover)
+    }
+
+    const reset_land_cover = () => {
+        all_pick_land_cover = []
+        console.log(333, 'reset all_picl_land_cover', all_pick_land_cover)
     }
 
 
+    // const value_land_cover_list = useRef('')
     
+    const submit_all_land_cover = () => {
+        
+        if (all_pick_land_cover.length < collection.length) {
+            alert('all_pick_land_cover.length < collection.length')
+            return 
+        }
 
-    const value_land_cover_list = useRef('')
-    
-    const submit_land_cover = () => {
+        console.log(5555555)
         collection = []
         if (draw_list.length > 0) {
             for (let n = 0; n < draw_list.length; n++) {
@@ -579,6 +596,7 @@ export default function DashboardContent() {
                 collection.push(JSON.stringify(geojson))
             }
         } else {
+            console.log('submit_all_land_cover draw_list.length !> 0')
             return
         }
         
@@ -587,16 +605,32 @@ export default function DashboardContent() {
             features: collection.map(JSON.parse)
         }
 
-        var input_lc_list = value_land_cover_list.current.value
+        // var input_lc_list = value_land_cover_list.current.value
+        // var input_lc_list = JSON.stringify(all_pick_land_cover)
         var ret_lc_list = []
 
-        if (input_lc_list != '') {
-            for (let n = 0; n < input_lc_list.split(',').length; n++) {
-                if (n < collection.length) {
-                    ret_lc_list.push(parseInt(input_lc_list.split(',')[n]))
-                }
+
+        for (let n = 0; n < all_pick_land_cover.length; n++) {
+            console.log(777, n, all_pick_land_cover[n])
+            if (all_pick_land_cover.length <= collection.length) {
+                ret_lc_list.push(parseInt(all_pick_land_cover[n]))
             }
         }
+
+        
+        
+
+        // if (input_lc_list != '') {
+        //     for (let n = 0; n < input_lc_list.split(',').length; n++) {
+        //         if (n < collection.length) {
+        //             ret_lc_list.push(parseInt(input_lc_list.split(',')[n]))
+        //         }
+        //     }
+        // }
+        
+        console.log(777777, collection.length, all_pick_land_cover.length)
+        console.log(312312313, all_pick_land_cover)
+        console.log(312312313, ret_lc_list)
 
         for (let i = 0; i < landcover_collection.features.length; i++) {
             landcover_collection.features[i].properties.value = ret_lc_list[i]
@@ -605,9 +639,12 @@ export default function DashboardContent() {
         landcover_collection = JSON.stringify(landcover_collection)
         console.log('asdfsadfa', landcover_collection)
 
+        
+        
         axios.get('https://' + config.GCP_EXT_IP + '/land_cover', { params: { 'landcover_collection': landcover_collection } }).then(res => { console.log('submit landcover_collection', res.data) })
         
     }
+    
     
     
 
@@ -657,6 +694,17 @@ export default function DashboardContent() {
                                                                 layer.addTo(map)
                                                                 layers.push(layer)
                                                             }}
+                                                        )
+                                                    axios.get('https://' + config.GCP_EXT_IP + '/grass_12c')
+                                                        .then(res => {
+                                                            test22 = res.data;
+                                                            if (test22 != 0) {
+                                                                var layer = L.geoJSON(res.data, { fillColor: 'yellow', weight: 2, opacity: 1, color: 'yellow', fillOpacity: 0.7 })
+                                                                console.log('test33', test33)
+                                                                layer.addTo(map)
+                                                                layers.push(layer)
+                                                            }
+                                                        }
                                                         )
                                                     // axios.get('https://' + config.GCP_EXT_IP + '/grass_12b').then(res => { test22 = res.data; if (test22 != 0) { L.geoJSON(res.data, { fillColor: 'orange', weight: 2, opacity: 1, color: 'orange', fillOpacity: 0.7 }).addTo(map) } })
                                                     // axios.get('https://' + config.GCP_EXT_IP + '/grass_12c').then(res => { test33 = res.data; if (test33 != 0) { L.geoJSON(res.data, { fillColor: 'yellow', weight: 2, opacity: 1, color: 'yellow', fillOpacity: 0.7 }).addTo(map) } })
@@ -787,13 +835,20 @@ export default function DashboardContent() {
                                         <FormControl sx={{ m: 1, minWidth: 250 }}>
                                             <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} onClick={submit_fire_break} >ยืนยันข้อมูลแนวป้องกันไฟ</Button>
                                             {/* <Button type="submit" fullWidth variant="contained" sx={{ mt: 1, mb: 2 }} onClick={import_land_cover} >นำเข้าข้อมูลแบบจำลองเชื้อเพลิง</Button> */}
-                                            <TextField required type='string' fullWidth variant="standard" inputRef={value_land_cover_list} helperText="เลือกข้อมูลแบบจำลองเชื้อเพลิง" />
-                                            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} onClick={submit_land_cover} >เลือก</Button>
-                                            {/* <Select value={landcover} label="landcover" onChange={handle_change_Land_cover} > */}
-                                                <MenuItem value={0}></MenuItem>
-                                                <MenuItem value={1}>ดิน</MenuItem>
-                                                <MenuItem value={2}>น้ำ</MenuItem>
+                                            {/* <TextField required type='string' fullWidth variant="standard" inputRef={value_land_cover_list} helperText="เลือกข้อมูลแบบจำลองเชื้อเพลิง" /> */}
+                                            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} onClick={submit_all_land_cover} > ยืนยันข้อมูลสิ่งปลกคลุมดิน (Landcover) </Button>
+                                            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} onClick={submit_land_cover} >เลือกสิ่งปลกคุลมดิน (Landcover) </Button>
+                                            <Select value={landcover} label="landcover" onChange={handle_change_Land_cover} >
+                                                <MenuItem value={30}> เมือง </MenuItem>
+                                                <MenuItem value={20}> พุ่มไม้ </MenuItem>
+                                                <MenuItem value={30}> พืช </MenuItem>
+                                                <MenuItem value={40}> พื้นที่เพาะปลูก </MenuItem>
+                                                <MenuItem value={60}> พื้นที่ว่างเปล่า </MenuItem>
+                                                <MenuItem value={70}> น้ำ </MenuItem>
+                                                <MenuItem value={115}> ป่า </MenuItem>
+                                                <MenuItem value={70}> แนวป้องกันไฟ </MenuItem>
                                             </Select>
+                                            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} onClick={reset_land_cover} > reset landcover </Button>
                                         </FormControl>
                                     </Box>
                                 </Paper>
