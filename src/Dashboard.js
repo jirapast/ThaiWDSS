@@ -582,12 +582,6 @@ export default function DashboardContent() {
     
     const submit_all_land_cover = () => {
         
-        if (all_pick_land_cover.length < collection.length) {
-            alert('all_pick_land_cover.length < collection.length')
-            return 
-        }
-
-        console.log(5555555)
         collection = []
         if (draw_list.length > 0) {
             for (let n = 0; n < draw_list.length; n++) {
@@ -598,6 +592,17 @@ export default function DashboardContent() {
         } else {
             console.log('submit_all_land_cover draw_list.length !> 0')
             return
+        }
+
+        console.log(5555555)
+        console.log('collection.length', collection.length)
+        console.log('all_pick_land_cover.length', all_pick_land_cover.length)
+        console.log(5555555)
+
+        
+        if (all_pick_land_cover.length != collection.length) {
+            alert('all_pick_land_cover.length != collection.length')
+            return 
         }
         
         var landcover_collection = {
@@ -641,7 +646,7 @@ export default function DashboardContent() {
 
         
         
-        axios.get('https://' + config.GCP_EXT_IP + '/land_cover', { params: { 'landcover_collection': landcover_collection } }).then(res => { console.log('submit landcover_collection', res.data) })
+        // axios.get('https://' + config.GCP_EXT_IP + '/land_cover', { params: { 'landcover_collection': landcover_collection } }).then(res => { console.log('submit landcover_collection', res.data) })
         
     }
     
@@ -706,8 +711,6 @@ export default function DashboardContent() {
                                                             }
                                                         }
                                                         )
-                                                    // axios.get('https://' + config.GCP_EXT_IP + '/grass_12b').then(res => { test22 = res.data; if (test22 != 0) { L.geoJSON(res.data, { fillColor: 'orange', weight: 2, opacity: 1, color: 'orange', fillOpacity: 0.7 }).addTo(map) } })
-                                                    // axios.get('https://' + config.GCP_EXT_IP + '/grass_12c').then(res => { test33 = res.data; if (test33 != 0) { L.geoJSON(res.data, { fillColor: 'yellow', weight: 2, opacity: 1, color: 'yellow', fillOpacity: 0.7 }).addTo(map) } })
                                                 })
                                             })  
                                         })
