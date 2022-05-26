@@ -21,6 +21,8 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import TablePagination from '@mui/material/TablePagination';
+import Autocomplete from '@mui/material/Autocomplete';
 // import InputBase from '@mui/material/InputBase';
 // import SearchIcon from '@mui/icons-material/Search';
 // import ListItemButton from '@mui/material/ListItemButton';
@@ -46,7 +48,7 @@ import Button from '@mui/material/Button';
 // import Wifi1BarRoundedIcon from '@mui/icons-material/Wifi1BarRounded';
 // import ShowChartRoundedIcon from '@mui/icons-material/ShowChartRounded';
 // import RadioButtonUncheckedRoundedIcon from '@mui/icons-material/RadioButtonUncheckedRounded';
-// import InputLabel from '@mui/material/InputLabel';
+import InputLabel from '@mui/material/InputLabel';
 // import MenuItem from '@mui/material/MenuItem';
 // import Select from '@mui/material/Select';
 // import SwipeableDrawer from '@mui/material/SwipeableDrawer';
@@ -59,6 +61,7 @@ import Button from '@mui/material/Button';
 // import ListItem from '@mui/material/ListItem';
 // import ListItemAvatar from '@mui/material/ListItemAvatar';
 // import { useState, Component } from 'react';
+import { zhCN } from '@mui/material/locale';
 
 import FormControl from '@mui/material/FormControl';
 // import { MapContainer, TileLayer } from 'react-leaflet';
@@ -75,6 +78,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 // or
 // import { InputAdornment } from '@mui/material';
 
+import * as locales from '@mui/material/locale';
 
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -198,8 +202,6 @@ const on_submit_vector = (e) => {
 
 
 
-
-
 const mainListItems = (
     <React.Fragment>
         <ListItemButton>
@@ -207,6 +209,7 @@ const mainListItems = (
                 <DashboardIcon />
             </ListItemIcon>
             <ListItemText primary="Dashboard" />
+
         </ListItemButton>
     </React.Fragment>
 );
@@ -218,6 +221,8 @@ const secondaryListItems = (
                 <AssignmentIcon />
             </ListItemIcon>
             <ListItemText primary="Log In" />
+            
+
         </ListItemButton>
     </React.Fragment>
 );
@@ -262,6 +267,10 @@ export default function DashboardContent() {
             <DrawTools />
         </MapContainer>
     ), [])
+
+    // 
+    const value_wind_spe = useRef()
+    const value_wind_dir = useRef()
     
 
     // 
@@ -316,6 +325,20 @@ export default function DashboardContent() {
                         // map.setView([lat, lon], 15)
                     }
                 }).catch((error) => { console.log(error) })
+
+                axios.get('http://api.weatherapi.com/v1/current.json?key=' + config.WEATHER_API_KEY + '&q=' + g_lat + ',' + g_lon + '&aqi=no')
+                    .then(res => {
+                        if (res.data.location.country != 'Thailand') {
+                            console.log('wrong coordinates')
+                            alert('wrong coordinates')
+                        } else {
+                            console.log(res.data.location.country == 'Thailand', res.data.location.region)
+                            value_wind_spe.current.value = res.data.current.wind_kph
+                            value_wind_dir.current.value = res.data.current.wind_degree
+                            // axios.get('https://' + config.GCP_EXT_IP + '/weather', { params: { 'wind_dir': res.data.current.wind_degree, 'wind_spe': res.data.current.wind_kph } }).then(res => { console.log('input weather', res.data) })
+                        }
+                    }).catch(err => console.log(err.data))
+
         }
 
 
@@ -335,8 +358,8 @@ export default function DashboardContent() {
         return (
             <div>
                 <TextField label="Search field" type="search" inputRef={value_search} />
-                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_search_A} >Search AOI</Button>
-                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_geometry}>Submit Geometry</Button>
+                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_search_A} >Search</Button>
+                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_geometry}>     </Button>
             </div>
         )
     }
@@ -361,24 +384,22 @@ export default function DashboardContent() {
     }
     
 
-    // 
-    const value_wind_spe = useRef()
-    const value_wind_dir = useRef()
     
-    const submit_weather = () => {
-        axios.get('http://api.weatherapi.com/v1/current.json?key=' + config.WEATHER_API_KEY + '&q=' + g_lat + ',' + g_lon + '&aqi=no')
-            .then(res => {
-                if (res.data.location.country != 'Thailand') {
-                    console.log('wrong coordinates')
-                    alert('wrong coordinates')
-                } else {
-                    console.log(res.data.location.country == 'Thailand', res.data.location.region)
-                    value_wind_spe.current.value = res.data.current.wind_kph
-                    value_wind_dir.current.value = res.data.current.wind_degree
-                    axios.get('https://' + config.GCP_EXT_IP + '/weather', { params: { 'wind_dir': res.data.current.wind_degree, 'wind_spe': res.data.current.wind_kph } }).then(res => { console.log('input weather', res.data) })
-                }
-            }).catch(err => console.log(err.data))
-    }
+    
+    // const submit_weather = () => {
+        // axios.get('http://api.weatherapi.com/v1/current.json?key=' + config.WEATHER_API_KEY + '&q=' + g_lat + ',' + g_lon + '&aqi=no')
+        //     .then(res => {
+        //         if (res.data.location.country != 'Thailand') {
+        //             console.log('wrong coordinates')
+        //             alert('wrong coordinates')
+        //         } else {
+        //             console.log(res.data.location.country == 'Thailand', res.data.location.region)
+        //             value_wind_spe.current.value = res.data.current.wind_kph
+        //             value_wind_dir.current.value = res.data.current.wind_degree
+        //             axios.get('https://' + config.GCP_EXT_IP + '/weather', { params: { 'wind_dir': res.data.current.wind_degree, 'wind_spe': res.data.current.wind_kph } }).then(res => { console.log('input weather', res.data) })
+        //         }
+        //     }).catch(err => console.log(err.data))
+    // }
 
 
     const __get_axios_FIRMS = async(url) => {
@@ -646,7 +667,7 @@ export default function DashboardContent() {
 
         
         
-        // axios.get('https://' + config.GCP_EXT_IP + '/land_cover', { params: { 'landcover_collection': landcover_collection } }).then(res => { console.log('submit landcover_collection', res.data) })
+        axios.get('https://' + config.GCP_EXT_IP + '/edit_land_cover', { params: { 'landcover_collection': landcover_collection } }).then(res => { console.log('submit landcover_collection', res.data) })
         
     }
     
@@ -741,6 +762,14 @@ export default function DashboardContent() {
     }
     // 
 
+    const [ lang, setLang ] = React.useState('');
+
+    const handleChangeLang = (event) => {
+        setLang(event.target.value)
+        console.log('Lang', lang)
+    };
+
+
 
     return (
         <ThemeProvider theme={mdTheme}>
@@ -756,7 +785,15 @@ export default function DashboardContent() {
                             <MenuIcon />
                         </IconButton>
                         <Typography component="h1" variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>Dashboard</Typography>
-
+                        <Box sx={{ minWidth: 120 }}>
+                            <FormControl fullWidth>
+                                <InputLabel>ภาษา</InputLabel>
+                                <Select value={lang} onChange={handleChangeLang} >
+                                    <MenuItem value={10}>EN</MenuItem>
+                                    <MenuItem value={20}>TH</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Box>
                     </Toolbar>
                 </AppBar>
 
@@ -813,7 +850,7 @@ export default function DashboardContent() {
                                         <FormControl sx={{ m: 1, minWidth: 250 }}>
                                             <TextField required type='number' fullWidth variant="standard" inputRef={value_wind_spe} helperText="ทิศทางลม (องศาตามเข็มนาฬิกาจากทิศเหนือ)" />
                                             <TextField required type='number' fullWidth variant="standard" inputRef={value_wind_dir} helperText="ความเร็วลม (กิโลเมตรต่อชั่วโมง)" />
-                                            <Button type="submit" fullWidth variant="contained" sx={{ mt: 1, mb: 2 }} onClick={submit_weather}>นำเข้าข้อมูลสภาพอากาศ</Button>
+                                            {/* <Button type="submit" fullWidth variant="contained" sx={{ mt: 1, mb: 2 }} onClick={submit_weather}>นำเข้าข้อมูลสภาพอากาศ</Button> */}
                                         </FormControl>
                                     </Box>
                                 </Paper>
@@ -822,9 +859,11 @@ export default function DashboardContent() {
                             <Grid item xs={4}>
                                 <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
                                     <Box sx={{ marginTop: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', }}>
-                                        <Typography component="h1" variant="h5"> ข้อมูลจุดความร้อน </Typography>
+                                        <Typography component="h1" variant="h5"> ข้อมูลจุดกำเนิดไฟป่า </Typography>
+                                        <p></p>
+                                        <p>ระบุตำแหน่งแหล่งกำเนิดไฟป่า โดยการวาดรูปทรงบนแผนที่</p>
                                         <FormControl sx={{ m: 1, minWidth: 250 }}>
-                                            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} onClick={submit_hotspot} >ยืนยันข้อมูลจุดความร้อน</Button>
+                                            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} onClick={submit_hotspot} >ยืนยันข้อมูลจุดกำเนิดไฟป่า</Button>
                                             <Button type="submit" fullWidth variant="contained" sx={{ mt: 1, mb: 2 }} onClick={import_hotspot}>นำเข้าข้อมูลจุดความร้อนจาก FIRMS</Button>
                                         </FormControl>
                                     </Box>
@@ -834,12 +873,12 @@ export default function DashboardContent() {
                             <Grid item xs={4}>
                                 <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
                                     <Box sx={{ marginTop: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', }}>
-                                        <Typography component="h1" variant="h5">Land Cover</Typography>
+                                        <Typography component="h1" variant="h5">สิ่งปลกคลุมดิน (Land Cover)</Typography>
                                         <FormControl sx={{ m: 1, minWidth: 250 }}>
-                                            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} onClick={submit_fire_break} >ยืนยันข้อมูลแนวป้องกันไฟ</Button>
+                                            {/* <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} onClick={submit_fire_break} >ยืนยันข้อมูลแนวป้องกันไฟ</Button> */}
                                             {/* <Button type="submit" fullWidth variant="contained" sx={{ mt: 1, mb: 2 }} onClick={import_land_cover} >นำเข้าข้อมูลแบบจำลองเชื้อเพลิง</Button> */}
                                             {/* <TextField required type='string' fullWidth variant="standard" inputRef={value_land_cover_list} helperText="เลือกข้อมูลแบบจำลองเชื้อเพลิง" /> */}
-                                            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} onClick={submit_all_land_cover} > ยืนยันข้อมูลสิ่งปลกคลุมดิน (Landcover) </Button>
+                                            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} onClick={submit_all_land_cover} > ยืนยันข้อมูลสิ่งปลกคลุมดิน</Button>
                                             <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} onClick={submit_land_cover} >เลือกสิ่งปลกคุลมดิน (Landcover) </Button>
                                             <Select value={landcover} label="landcover" onChange={handle_change_Land_cover} >
                                                 <MenuItem value={30}> เมือง </MenuItem>
@@ -869,17 +908,7 @@ export default function DashboardContent() {
                                 </Paper>
                             </Grid>
 
-                            <Grid item xs={6}>
-                                <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                                    <Box sx={{ marginTop: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', }}>
-                                        <FormControl sx={{ m: 1, minWidth: 250 }}>
-                                            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} >การลุกลามของไฟ</Button>
-                                            <Button type="submit" fullWidth variant="contained" sx={{ mt: 1, mb: 2 }} >พื้นที่ชุมชน</Button>
-                                            <Button type="submit" fullWidth variant="contained" sx={{ mt: 1, mb: 2 }} >ประเมินผลกระทบ</Button>
-                                        </FormControl>
-                                    </Box>
-                                </Paper>
-                            </Grid>
+                            
 
                         </Grid>
 
