@@ -6,6 +6,7 @@ import { useLeafletContext } from '@react-leaflet/core';
 
 import leaflet, { Map, Control } from 'leaflet';
 
+
 const eventHandlers = {
     onEdited: 'draw:edited',
     onDrawStart: 'draw:drawstart',
@@ -21,6 +22,24 @@ const eventHandlers = {
     onDeleteStop: 'draw:deletestop',
 };
 
+// const context = useLeafletContext()
+
+// const { map } = useLeafletContext()
+
+// var polygonDrawer = new L.Draw.Polyline(map);
+
+// map.on('draw:created', function (e) {
+//     var type = e.layerType,
+//         layer = e.layer;
+
+    // Do whatever you want with the layer.
+    // e.type will be the type of layer that has been draw (polyline, marker, polygon, rectangle, circle)
+    // E.g. add it to the map
+    // layer.addTo(map)
+// })
+
+
+
 export default function EditControl(props) {
     const context = useLeafletContext();
     const drawRef = useRef();
@@ -31,7 +50,7 @@ export default function EditControl(props) {
         const container = context.layerContainer || context.map;
         container.addLayer(e.layer);
         onCreated && onCreated(e);
-    };
+    }
 
     React.useEffect(() => {
         const { map } = context;
@@ -62,7 +81,7 @@ export default function EditControl(props) {
                 }
             }
         };
-    }, []);
+    }, [])
 
     React.useEffect(() => {
         if (
@@ -74,9 +93,14 @@ export default function EditControl(props) {
         }
         const { map } = context;
 
+
+
+
         drawRef.current.remove(map);
         drawRef.current = createDrawElement(props, context);
         drawRef.current.addTo(map);
+
+
 
         const { onMounted } = props;
         onMounted && onMounted(drawRef.current);
@@ -141,4 +165,4 @@ EditControl.propTypes = {
             removeLayer: PropTypes.func.isRequired,
         }),
     }),
-};
+}

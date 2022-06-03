@@ -73,7 +73,7 @@ import L from 'leaflet'
 
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-
+import { useLeafletContext } from '@react-leaflet/core';
 import InputAdornment from '@mui/material/InputAdornment';
 // or
 // import { InputAdornment } from '@mui/material';
@@ -359,6 +359,8 @@ export default function DashboardContent() {
                 <TextField label="Search field" type="search" inputRef={value_search} />
                 <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_search_A} >Search</Button>
                 <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_geometry}>     </Button>
+                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={draw_1}> draw_1 </Button>
+                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={draw_2}> draw_2 </Button>
             </div>
         )
     }
@@ -382,6 +384,28 @@ export default function DashboardContent() {
         })
     }
     
+
+    var draw_list = []
+    
+    const draw_1 = (e) => {
+        console.log('--> draw_1')
+        var polygonDrawer = new L.Draw.Polygon(map)
+        map.on('draw:created', function (e) {
+            e.layer.addTo(map)
+            draw_list.push(e.layer)
+        })
+        polygonDrawer.enable()
+    }
+
+    const draw_2 = (e) => {
+        console.log('--> draw_2')
+        for (let n = 0; n < draw_list.length; n++) {
+            console.log(333, n, draw_list[n])
+            map.removeLayer(draw_list[n])
+        }
+        draw_list = []
+    }
+
 
     
     

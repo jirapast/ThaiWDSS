@@ -18,10 +18,11 @@ const DrawTools = () => {
     
 
     const _onCreated = e => {
-        if (e.layerType === "marker") {
-            // Do marker specific actions
-        } else {
-        }
+        // if (e.layerType === "marker") {
+        //     Do marker specific actions
+        // } else {
+        // }
+        console.log('--> _onCreated')
         draw_list.push(e.layer)
     }
 
@@ -56,16 +57,18 @@ const DrawTools = () => {
     };
 
     const _onDrawStart = e => {
-        // console.log("_onDrawStart", e);
+        console.log("_onDrawStart", e)
+        
     };
 
-    
+
+
 
     return (
         <FeatureGroup>
             <EditControl
-                onDrawStart={_onDrawStart}
                 position="bottomleft"
+                onDrawStart={_onDrawStart}
                 onEdited={_onEdited}
                 onCreated={_onCreated}
                 onDeleted={_onDeleted}
