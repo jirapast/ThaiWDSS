@@ -595,7 +595,7 @@ export default function DashboardContent() {
         console.log(44444, value_wind_spe.current.value, value_wind_dir.current.value)
     }
 
-
+ddddddd
 
     const [ landcover, setLandCover ] = React.useState(0)
 
