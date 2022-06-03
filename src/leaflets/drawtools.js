@@ -13,7 +13,6 @@ const DrawTools = () => {
         e.layers.eachLayer(layer => {
             numEdited += 1;
         });
-        // console.log(`_onEdited: edited ${numEdited} layers`, e)
         // this._onChange();
     }
     
@@ -21,12 +20,8 @@ const DrawTools = () => {
     const _onCreated = e => {
         if (e.layerType === "marker") {
             // Do marker specific actions
-            // console.log("_onCreated: marker created", e);
         } else {
-            // console.log("_onCreated: something else created:", e.layerType, e)
         }
-        // console.log("geojson", e.layer.toGeoJSON());
-        // console.log("coords", e.layer.getLatLngs());
         draw_list.push(e.layer)
     }
 
@@ -64,20 +59,7 @@ const DrawTools = () => {
         // console.log("_onDrawStart", e);
     };
 
-    /*onEdited	function	hook to leaflet-draw's draw:edited event
-onCreated	function	hook to leaflet-draw's draw:created event
-onDeleted	function	hook to leaflet-draw's draw:deleted event
-onMounted	function	hook to leaflet-draw's draw:mounted event
-onEditStart	function	hook to leaflet-draw's draw:editstart event
-onEditStop	function	hook to leaflet-draw's draw:editstop event
-onDeleteStart	function	hook to leaflet-draw's draw:deletestart event
-onDeleteStop	function	hook to leaflet-draw's draw:deletestop event
-onDrawStart	function	hook to leaflet-draw's draw:drawstart event
-onDrawStop	function	hook to leaflet-draw's draw:drawstop event
-onDrawVertex	function	hook to leaflet-draw's draw:drawvertex event
-onEditMove	function	hook to leaflet-draw's draw:editmove event
-onEditResize	function	hook to leaflet-draw's draw:editresize event
-onEditVertex	function	hook to leaflet-draw's draw:editvertex event*/
+    
 
     return (
         <FeatureGroup>
@@ -110,28 +92,6 @@ onEditVertex	function	hook to leaflet-draw's draw:editvertex event*/
                             weight: 3
                         }
                     },
-                    // circlemarker: {
-                    //     icon: new L.DivIcon({
-                    //         iconSize: new L.Point(8, 8),
-                    //         className: "leaflet-div-icon leaflet-editing-icon"
-                    //     }),
-                    //     shapeOptions: {
-                    //         guidelineDistance: 10,
-                    //         color: "navy",
-                    //         weight: 3
-                    //     }
-                    // },
-                    // circle: {
-                    //     icon: new L.DivIcon({
-                    //         iconSize: new L.Point(8, 8),
-                    //         className: "leaflet-div-icon leaflet-editing-icon"
-                    //     }),
-                    //     shapeOptions: {
-                    //         guidelineDistance: 10,
-                    //         color: "navy",
-                    //         weight: 3
-                    //     }
-                    // },
                     polygon: {
                         icon: new L.DivIcon({
                             iconSize: new L.Point(8, 8),
@@ -142,7 +102,9 @@ onEditVertex	function	hook to leaflet-draw's draw:editvertex event*/
                             color: "navy",
                             weight: 3
                         }
-                    }
+                    },
+                    circlemarker: false,
+                    circle: false,
                 }}
             />
         </FeatureGroup>

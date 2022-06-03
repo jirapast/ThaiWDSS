@@ -875,7 +875,7 @@ export default function DashboardContent() {
                                     <Box sx={{ marginTop: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', }}>
                                         <Typography component="h1" variant="h5">สิ่งปลกคลุมดิน (Land Cover)</Typography>
                                         <FormControl sx={{ m: 1, minWidth: 250 }}>
-                                            {/* <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} onClick={submit_fire_break} >ยืนยันข้อมูลแนวป้องกันไฟ</Button> */}
+                                            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} onClick={submit_fire_break} >ยืนยันข้อมูลแนวป้องกันไฟ</Button>
                                             {/* <Button type="submit" fullWidth variant="contained" sx={{ mt: 1, mb: 2 }} onClick={import_land_cover} >นำเข้าข้อมูลแบบจำลองเชื้อเพลิง</Button> */}
                                             {/* <TextField required type='string' fullWidth variant="standard" inputRef={value_land_cover_list} helperText="เลือกข้อมูลแบบจำลองเชื้อเพลิง" /> */}
                                             <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} onClick={submit_all_land_cover} > ยืนยันข้อมูลสิ่งปลกคลุมดิน</Button>
