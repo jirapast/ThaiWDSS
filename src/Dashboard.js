@@ -335,10 +335,9 @@ export default function DashboardContent() {
                             console.log(res.data.location.country == 'Thailand', res.data.location.region)
                             value_wind_spe.current.value = res.data.current.wind_kph
                             value_wind_dir.current.value = res.data.current.wind_degree
-                            // axios.get('https://' + config.GCP_EXT_IP + '/weather', { params: { 'wind_dir': res.data.current.wind_degree, 'wind_spe': res.data.current.wind_kph } }).then(res => { console.log('input weather', res.data) })
+                            axios.get('https://' + config.GCP_EXT_IP + '/weather', { params: { 'wind_dir': res.data.current.wind_degree, 'wind_spe': res.data.current.wind_kph } }).then(res => { console.log('input weather', res.data) })
                         }
                     }).catch(err => console.log(err.data))
-
         }
 
 
@@ -387,6 +386,14 @@ export default function DashboardContent() {
     
     
     // const submit_weather = () => {
+        // value_wind_spe.current.value = res.data.current.wind_kph
+        // // value_wind_dir.current.value = res.data.current.wind_degree
+        // console.log(222222)
+        // console.log(444444, value_wind_spe.current.value)
+        // console.log(444444, value_wind_dir.current.value)
+        // axios.get('https://' + config.GCP_EXT_IP + '/weather', { params: { 'wind_dir': value_wind_spe.current.value, 'wind_spe': value_wind_spe.current.value } }).then(res => { console.log('input weather sent') })
+        // console.log(555555)
+        // axios.get('https://' + config.GCP_EXT_IP + '/weather', { params: { 'wind_dir': res.data.current.wind_degree, 'wind_spe': res.data.current.wind_kph } }).then(res => { console.log('input weather', res.data) })
         // axios.get('http://api.weatherapi.com/v1/current.json?key=' + config.WEATHER_API_KEY + '&q=' + g_lat + ',' + g_lon + '&aqi=no')
         //     .then(res => {
         //         if (res.data.location.country != 'Thailand') {
@@ -577,11 +584,21 @@ export default function DashboardContent() {
     }
 
 
-    // const import_land_cover = () => {
-        // console.log('import_land_cover')
-    // }
+    const handle_change_weather = (event) => {
+        // console.log(44444, value_wind_spe.current.value, value_wind_dir.current.value)
+        
+        var spe = parseFloat(value_wind_spe.current.value) * 54.6807
+        var dir = value_wind_dir.current.value
+
+        axios.get('https://' + config.GCP_EXT_IP + '/weather', { params: { 'wind_dir': dir, 'wind_spe': spe } }).then(res => { console.log('input weather sent') })
+        
+        console.log(44444, value_wind_spe.current.value, value_wind_dir.current.value)
+    }
+
+
 
     const [ landcover, setLandCover ] = React.useState(0)
+
 
     const handle_change_Land_cover = (event) => {
         setLandCover(event.target.value)
@@ -848,9 +865,9 @@ export default function DashboardContent() {
                                     <Box sx={{ marginTop: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', }}>
                                         <Typography component="h1" variant="h5"> ข้อมูลสภาพอากาศ </Typography>
                                         <FormControl sx={{ m: 1, minWidth: 250 }}>
-                                            <TextField required type='number' fullWidth variant="standard" inputRef={value_wind_spe} helperText="ทิศทางลม (องศาตามเข็มนาฬิกาจากทิศเหนือ)" />
-                                            <TextField required type='number' fullWidth variant="standard" inputRef={value_wind_dir} helperText="ความเร็วลม (กิโลเมตรต่อชั่วโมง)" />
-                                            {/* <Button type="submit" fullWidth variant="contained" sx={{ mt: 1, mb: 2 }} onClick={submit_weather}>นำเข้าข้อมูลสภาพอากาศ</Button> */}
+                                            <TextField required type='number' fullWidth variant="standard" inputRef={value_wind_spe} onChange={handle_change_weather} helperText="ทิศทางลม (องศาตามเข็มนาฬิกาจากทิศเหนือ)" />
+                                            <TextField required type='number' fullWidth variant="standard" inputRef={value_wind_dir} onChange={handle_change_weather} helperText="ความเร็วลม (กิโลเมตรต่อชั่วโมง)" />
+                                            {/* <Button type="submit" fullWidth variant="contained" sx={{ mt: 1, mb: 2 }} onClick={submit_weather}>ยืนยันข้อมูลสภาพอากาศ</Button> */}
                                         </FormControl>
                                     </Box>
                                 </Paper>
