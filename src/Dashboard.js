@@ -444,7 +444,7 @@ export default function DashboardContent() {
 
 
     const import_hotspot = () => {
-        console.log('asasdfasd import hotspot')
+        console.log('import hotspot')
         // let rad = 1000000 // m^2
         // let rec = L.rectangle(L.latLng(g_lat, g_lon).toBounds(rad))
 
@@ -459,7 +459,6 @@ export default function DashboardContent() {
         _today = _today.getFullYear() + '-' + String(_today.getMonth() + 1).padStart(2, '0') + '-' + String(_today.getDate()).padStart(2, '0')
         
         // _today = '2021-03-25'
-
         // y1 = 18.854483124484304
         // x1 = 98.71290241522325
         // y2 = 18.839681563180076
@@ -498,10 +497,12 @@ export default function DashboardContent() {
                     }
                 }
                 features_collection.features = feats
-                // console.log(654564564987654, JSON.stringify(features_collection))
-                
-                axios.get('https://' + config.GCP_EXT_IP + '/test', { params: { 'features_collection': features_collection } }).then(res => { console.log('input draw list', res.data) })
-
+                if (features_collection.features.length==0) {
+                    alert('hotspot data: empty array')
+                } else{
+                    console.lo('hostpot data: found, sent')
+                    axios.get('https://' + config.GCP_EXT_IP + '/test', { params: { 'features_collection': features_collection } }).then(res => { console.log('input draw list', res.data) })
+                }
             })
     }
 
@@ -595,7 +596,7 @@ export default function DashboardContent() {
         console.log(44444, value_wind_spe.current.value, value_wind_dir.current.value)
     }
 
-ddddddd
+
 
     const [ landcover, setLandCover ] = React.useState(0)
 
