@@ -1,7 +1,9 @@
 import * as React from 'react';
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+// import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { useState, useRef, useMemo } from "react";
 
-import { styled, createTheme, ThemeProvider, alpha } from '@mui/material/styles';
+// import { styled, createTheme, ThemeProvider, alpha } from '@mui/material/styles';
+import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import MuiDrawer from '@mui/material/Drawer';
 import MuiAppBar from '@mui/material/AppBar';
@@ -21,8 +23,8 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import TablePagination from '@mui/material/TablePagination';
-import Autocomplete from '@mui/material/Autocomplete';
+// import TablePagination from '@mui/material/TablePagination';
+// import Autocomplete from '@mui/material/Autocomplete';
 // import InputBase from '@mui/material/InputBase';
 // import SearchIcon from '@mui/icons-material/Search';
 // import ListItemButton from '@mui/material/ListItemButton';
@@ -34,7 +36,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 // import PeopleIcon from '@mui/icons-material/People';
 // import BarChartIcon from '@mui/icons-material/BarChart';
 // import LayersIcon from '@mui/icons-material/Layers';
-// import AssignmentIcon from '@mui/icons-material/Assignment';
+import AssignmentIcon from '@mui/icons-material/Assignment';
 // import Dialog from '@mui/material/Dialog';
 // import DialogActions from '@mui/material/DialogActions';
 // import DialogContent from '@mui/material/DialogContent';
@@ -61,35 +63,36 @@ import InputLabel from '@mui/material/InputLabel';
 // import ListItem from '@mui/material/ListItem';
 // import ListItemAvatar from '@mui/material/ListItemAvatar';
 // import { useState, Component } from 'react';
-import { zhCN } from '@mui/material/locale';
+// import { zhCN } from '@mui/material/locale';
 
 import FormControl from '@mui/material/FormControl';
 // import { MapContainer, TileLayer } from 'react-leaflet';
 // import { MapContainer, TileLayer, useMap, } from 'https://cdn.esm.sh/react-leaflet'
-import { MapContainer, TileLayer, useMap, Map, FeatureGroup, LayerGroup, ZoomControl} from 'react-leaflet'
+// import { MapContainer, TileLayer, useMap, Map, FeatureGroup, LayerGroup, ZoomControl} from 'react-leaflet'
+import { MapContainer, TileLayer, ZoomControl } from 'react-leaflet'
 
 // import { Map, TileLayer } from "react-leaflet";
 import L from 'leaflet'
 
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import { useLeafletContext } from '@react-leaflet/core';
-import InputAdornment from '@mui/material/InputAdornment';
+// import { useLeafletContext } from '@react-leaflet/core';
+// import InputAdornment from '@mui/material/InputAdornment';
 // or
 // import { InputAdornment } from '@mui/material';
 
-import * as locales from '@mui/material/locale';
+// import * as locales from '@mui/material/locale';
 
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import ListSubheader from '@mui/material/ListSubheader';
+// import ListSubheader from '@mui/material/ListSubheader';
 import DashboardIcon from '@mui/icons-material/Dashboard';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import PeopleIcon from '@mui/icons-material/People';
-import BarChartIcon from '@mui/icons-material/BarChart';
-import LayersIcon from '@mui/icons-material/Layers';
-import AssignmentIcon from '@mui/icons-material/Assignment';
+// import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+// import PeopleIcon from '@mui/icons-material/People';
+// import BarChartIcon from '@mui/icons-material/BarChart';
+// import LayersIcon from '@mui/icons-material/Layers';
+// import AssignmentIcon from '@mui/icons-material/Assignment';
 import axios from 'axios';
 
 
@@ -107,10 +110,11 @@ import axios from 'axios';
 
 // import EditControl from './EditControl.js'
 
-import {DrawTools, draw_list} from './leaflets/drawtools.js'
+// import {DrawTools, draw_list} from './leaflets/drawtools.js'
+import { DrawTools } from './leaflets/drawtools.js'
 
 
-import test from './leaflets/drawtools.js'
+// import test from './leaflets/drawtools.js'
 import config from './config.json'
 
 
@@ -170,23 +174,22 @@ var collection = {
     "features": []
 }
 
-const onCreated = (e) => {
-    collection.features.push(e.layer.toGeoJSON())
-    console.log('----draw create----')
-    console.log(collection)
-}
+// const onCreated = (e) => {
+//     collection.features.push(e.layer.toGeoJSON())
+//     console.log('----draw create----')
+//     console.log(collection)
+// }
 
-const onDeleted = (e) => {
-    collection = {
-        "type": "FeatureCollection",
-        "features": []
-    };
+// const onDeleted = (e) => {
+//     collection = {
+//         "type": "FeatureCollection",
+//         "features": []
+//     };
+// }
 
-}
-
-const on_submit_vector = (e) => {
-    console.log(4444)
-    console.log(e.target.value)
+// const on_submit_vector = (e) => {
+//     console.log(4444)
+//     console.log(e.target.value)
     // console.log(collection)
     // const Http = new XMLHttpRequest();
     // const url = 'http://127.0.0.1:8000';
@@ -198,7 +201,7 @@ const on_submit_vector = (e) => {
     //     console.log(Http.responseText)
     // }
     // console.log(4444)
-}
+// }
 
 
 
@@ -240,11 +243,11 @@ var [ lng1, lng2 ] = [ 0.0, 0.0 ]
 var [ lat1, lat2 ] = [ 0.0, 0.0 ]
 
 // geometry draw
-var candidate_geojson = []
+// var candidate_geojson = []
 var layer_aoi = []
 
 // landcover ordered list
-var land_cover_list = []
+// var land_cover_list = []
 var all_pick_land_cover = []
 
 
@@ -328,11 +331,11 @@ export default function DashboardContent() {
 
                 axios.get('http://api.weatherapi.com/v1/current.json?key=' + config.WEATHER_API_KEY + '&q=' + g_lat + ',' + g_lon + '&aqi=no')
                     .then(res => {
-                        if (res.data.location.country != 'Thailand') {
+                        if (res.data.location.country !== 'Thailand') {
                             console.log('wrong coordinates')
                             alert('wrong coordinates')
                         } else {
-                            console.log(res.data.location.country == 'Thailand', res.data.location.region)
+                            console.log(res.data.location.country === 'Thailand', res.data.location.region)
                             value_wind_spe.current.value = res.data.current.wind_kph
                             value_wind_dir.current.value = res.data.current.wind_degree
                             axios.get('https://' + config.GCP_EXT_IP + '/weather', { params: { 'wind_dir': res.data.current.wind_degree, 'wind_spe': res.data.current.wind_kph } }).then(res => { console.log('input weather', res.data) })
@@ -420,7 +423,7 @@ export default function DashboardContent() {
         // axios.get('https://' + config.GCP_EXT_IP + '/weather', { params: { 'wind_dir': res.data.current.wind_degree, 'wind_spe': res.data.current.wind_kph } }).then(res => { console.log('input weather', res.data) })
         // axios.get('http://api.weatherapi.com/v1/current.json?key=' + config.WEATHER_API_KEY + '&q=' + g_lat + ',' + g_lon + '&aqi=no')
         //     .then(res => {
-        //         if (res.data.location.country != 'Thailand') {
+        //         if (res.data.location.country !== 'Thailand') {
         //             console.log('wrong coordinates')
         //             alert('wrong coordinates')
         //         } else {
@@ -446,7 +449,7 @@ export default function DashboardContent() {
                         _lon.push(__[i].split(',')[1])
                     }
                 }
-                if (_lat.length!=_lon.length) { console.error('firms lat lon not the same size') }
+                if (_lat.length!==_lon.length) { console.error('firms lat lon not the same size') }
                 else {
                     for (let i = 0; i < _lat.length; i++) {
                         _lat_lon.push([_lat[i], _lon[i]])
@@ -521,7 +524,7 @@ export default function DashboardContent() {
                     }
                 }
                 features_collection.features = feats
-                if (features_collection.features.length==0) {
+                if (features_collection.features.length===0) {
                     alert('hotspot data: empty array')
                 } else{
                     console.lo('hostpot data: found, sent')
@@ -559,7 +562,7 @@ export default function DashboardContent() {
             
             // var candy = []
             // for (let n = 0; n < draw_list.length; n++) {
-            //     if (typeof(draw_list[n]._latlng) != 'undefined') { // a point
+            //     if (typeof(draw_list[n]._latlng) !== 'undefined') { // a point
             //             // candy.push([[ draw_list[n]._latlng.lng, draw_list[n]._latlng.lat ]])
             //         geojson_point.geometry.coordinates = [
             //             draw_list[n]._latlng.lng, 
@@ -663,8 +666,8 @@ export default function DashboardContent() {
         console.log(5555555)
 
         
-        if (all_pick_land_cover.length != collection.length) {
-            alert('all_pick_land_cover.length != collection.length')
+        if (all_pick_land_cover.length !== collection.length) {
+            alert('all_pick_land_cover.length !== collection.length')
             return 
         }
         
@@ -688,7 +691,7 @@ export default function DashboardContent() {
         
         
 
-        // if (input_lc_list != '') {
+        // if (input_lc_list !== '') {
         //     for (let n = 0; n < input_lc_list.split(',').length; n++) {
         //         if (n < collection.length) {
         //             ret_lc_list.push(parseInt(input_lc_list.split(',')[n]))
@@ -746,7 +749,7 @@ export default function DashboardContent() {
                                                     axios.get('https://' + config.GCP_EXT_IP + '/grass_12a')
                                                         .then(res => { 
                                                             test11 = res.data; 
-                                                            if (test11 != 0) { 
+                                                            if (test11 !== 0) { 
                                                                 var layer = L.geoJSON(res.data, { fillColor: 'red', weight: 2, opacity: 1, color: 'red', fillOpacity: 0.7 })
                                                                 console.log('test11', test11)
                                                                 layer.addTo(map)
@@ -756,7 +759,7 @@ export default function DashboardContent() {
                                                     axios.get('https://' + config.GCP_EXT_IP + '/grass_12b')
                                                         .then(res => {
                                                             test22 = res.data;
-                                                            if (test22 != 0) {
+                                                            if (test22 !== 0) {
                                                                 var layer = L.geoJSON(res.data, { fillColor: 'orange', weight: 2, opacity: 1, color: 'orange', fillOpacity: 0.7 })
                                                                 console.log('test22', test22)
                                                                 layer.addTo(map)
@@ -766,7 +769,7 @@ export default function DashboardContent() {
                                                     axios.get('https://' + config.GCP_EXT_IP + '/grass_12c')
                                                         .then(res => {
                                                             test22 = res.data;
-                                                            if (test22 != 0) {
+                                                            if (test22 !== 0) {
                                                                 var layer = L.geoJSON(res.data, { fillColor: 'yellow', weight: 2, opacity: 1, color: 'yellow', fillOpacity: 0.7 })
                                                                 console.log('test33', test33)
                                                                 layer.addTo(map)
@@ -786,9 +789,9 @@ export default function DashboardContent() {
             })
         })
 
-// axios.get('https://' + config.GCP_EXT_IP + '/grass_8a').then(res => { test11 = res.data; if (test11 != 0) { L.geoJSON(res.data, { fillColor: 'red', weight: 2, opacity: 1, color: 'red', fillOpacity: 0.7 }).addTo(map) } })
-                                    // axios.get('https://' + config.GCP_EXT_IP + '/grass_8b').then(res => { test22 = res.data; if (test22 != 0) { L.geoJSON(res.data, { fillColor: 'orange', weight: 2, opacity: 1, color: 'orange', fillOpacity: 0.7 }).addTo(map) } })
-                                    // axios.get('https://' + config.GCP_EXT_IP + '/grass_8c').then(res => { test33 = res.data; console.log('answer  --> ', test33); if (test33 != 0) { L.geoJSON(res.data, { fillColor: 'yellow', weight: 2, opacity: 1, color: 'yellow', fillOpacity: 0.7 }).addTo(map) } })
+// axios.get('https://' + config.GCP_EXT_IP + '/grass_8a').then(res => { test11 = res.data; if (test11 !== 0) { L.geoJSON(res.data, { fillColor: 'red', weight: 2, opacity: 1, color: 'red', fillOpacity: 0.7 }).addTo(map) } })
+                                    // axios.get('https://' + config.GCP_EXT_IP + '/grass_8b').then(res => { test22 = res.data; if (test22 !== 0) { L.geoJSON(res.data, { fillColor: 'orange', weight: 2, opacity: 1, color: 'orange', fillOpacity: 0.7 }).addTo(map) } })
+                                    // axios.get('https://' + config.GCP_EXT_IP + '/grass_8c').then(res => { test33 = res.data; console.log('answer  --> ', test33); if (test33 !== 0) { L.geoJSON(res.data, { fillColor: 'yellow', weight: 2, opacity: 1, color: 'yellow', fillOpacity: 0.7 }).addTo(map) } })
         
         
 

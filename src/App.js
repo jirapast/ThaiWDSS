@@ -1,7 +1,8 @@
 // import logo from './logo.svg';
 // import './App.css';
 import React from 'react'
-import { MapContainer, TileLayer, useMap } from 'react-leaflet'
+// import { MapContainer, TileLayer, useMap } from 'react-leaflet'
+import { MapContainer, TileLayer } from 'react-leaflet'
 
 export default function App() {
   return (
