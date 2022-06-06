@@ -6,61 +6,64 @@ import EditControl from './react_leaflet_draw.js' // import { EditControl } from
 
 var draw_list = []
 
+
+const _onEdited = e => {
+    let numEdited = 0;
+    e.layers.eachLayer(layer => {
+        numEdited += 1;
+    });
+    // this._onChange();
+}
+
+
+const _onCreated = e => {
+    // if (e.layerType === "marker") {
+    //     Do marker specific actions
+    // } else {
+    // }
+    console.log('--> _onCreated')
+    draw_list.push(e.layer)
+}
+
+const _onDeleted = e => {
+    console.log('--> _onDeleted')
+    // let numDeleted = 0;
+    // e.layers.eachLayer(layer => {
+    //     numDeleted += 1;
+    // });
+    // console.log(`onDeleted: removed ${numDeleted} layers`, e);
+    draw_list = []
+    // this._onChange();
+};
+
+const _onMounted = drawControl => {
+    // console.log("_onMounted", drawControl);
+};
+
+const _onEditStart = e => {
+    // console.log("_onEditStart", e);
+};
+
+const _onEditStop = e => {
+    // console.log("_onEditStop", e);
+};
+
+const _onDeleteStart = e => {
+    // console.log("_onDeleteStart", e);
+};
+
+const _onDeleteStop = e => {
+    // console.log("_onDeleteStop", e);
+};
+
+const _onDrawStart = e => {
+    console.log("_onDrawStart", e)
+
+};
+
+
+
 const DrawTools = () => {
-
-    const _onEdited = e => {
-        let numEdited = 0;
-        e.layers.eachLayer(layer => {
-            numEdited += 1;
-        });
-        // this._onChange();
-    }
-    
-
-    const _onCreated = e => {
-        // if (e.layerType === "marker") {
-        //     Do marker specific actions
-        // } else {
-        // }
-        console.log('--> _onCreated')
-        draw_list.push(e.layer)
-    }
-
-    const _onDeleted = e => {
-        let numDeleted = 0;
-        e.layers.eachLayer(layer => {
-            numDeleted += 1;
-        });
-        // console.log(`onDeleted: removed ${numDeleted} layers`, e);
-        draw_list = []
-        // this._onChange();
-    };
-
-    const _onMounted = drawControl => {
-        // console.log("_onMounted", drawControl);
-    };
-
-    const _onEditStart = e => {
-        // console.log("_onEditStart", e);
-    };
-
-    const _onEditStop = e => {
-        // console.log("_onEditStop", e);
-    };
-
-    const _onDeleteStart = e => {
-        // console.log("_onDeleteStart", e);
-    };
-
-    const _onDeleteStop = e => {
-        // console.log("_onDeleteStop", e);
-    };
-
-    const _onDrawStart = e => {
-        console.log("_onDrawStart", e)
-        
-    };
-
 
 
 

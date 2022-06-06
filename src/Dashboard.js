@@ -96,7 +96,7 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import axios from 'axios';
 
 
-
+import { useLeafletContext } from '@react-leaflet/core';
 
 // import { EditControl } from "react-leaflet-draw"
 // import { FeatureGroup } from 'react-leaflet';
@@ -110,12 +110,15 @@ import axios from 'axios';
 
 // import EditControl from './EditControl.js'
 
-import {DrawTools, draw_list} from './leaflets/drawtools.js'
+import { DrawTools, draw_list } from './leaflets/drawtools.js'
+// import { DrawTools, draw_list, Person } from './leaflets/drawtools.js'
+// import { DrawTools, Person } from './leaflets/drawtools.js'
 
 
 
 // import test from './leaflets/drawtools.js'
 import config from './config.json'
+import { PersonRemoveAlt1TwoTone } from '@mui/icons-material';
 
 
 
@@ -252,6 +255,7 @@ var all_pick_land_cover = []
 
 
 
+
 export default function DashboardContent() {
 
     const [open, setOpen] = useState(true)
@@ -290,29 +294,20 @@ export default function DashboardContent() {
             geocoder.search({ q: s })
                 .then((res) => {
                     if (typeof (res[0]) == 'undefined') {
-                        // alert('location not found then use default coordinates')
-                        console.log('location not found then use default coordinates')
-                        
-                        // let rec = L.rectangle(L.latLng(g_lat, g_lon).toBounds(4000))
                         let rec = L.rectangle(L.latLng(g_lat, g_lon).toBounds(4000))
-
-                        rec.addTo(map)
+                        // rec.addTo(map)
                         layer_aoi.push(rec)
                         map.fitBounds(rec.getBounds())
-
                         lat2 = rec.getBounds()._northEast.lat
                         lng2 = rec.getBounds()._northEast.lng
                         lat1 = rec.getBounds()._southWest.lat
                         lng1 = rec.getBounds()._southWest.lng
                         axios.get('https://' + config.GCP_EXT_IP + '/aoi', { params: { 'lng1': lng1, 'lng2': lng2, 'lat1': lat1, 'lat2': lat2 } }).then(res => { console.log('input aoi', res.data) })
-                        console.log('location not found then use default coordinates')
-                        console.log(lng1, lng2, lat1, lat2)
+                        console.log('location not found then use default coordinates', lng1, lng2, lat1, lat2)
                     } else {
                         g_lat = res[0].lat
                         g_lon = res[0].lon
                         console.log('location found', g_lat, g_lon)
-                        // submit_search_B(g_lat, g_lon)
-                        // let rec = L.rectangle(L.latLng(g_lat, g_lon).toBounds(4000))
                         let rec = L.rectangle(L.latLng(g_lat, g_lon).toBounds(4000))
                         rec.addTo(map)
                         layer_aoi.push(rec)
@@ -343,6 +338,55 @@ export default function DashboardContent() {
                     }).catch(err => console.log(err.data))
         }
 
+        
+        
+
+        const draw_aoi = (e) => {
+            console.log('--> draw_aoi')
+            new L.Draw.Rectangle(map).enable()
+            
+            
+
+            map.on('draw:created', function (e) {
+                e.layer.addTo(map)
+
+                lat1 = e.layer._latlngs[0][0].lat
+                lat2 = e.layer._latlngs[0][2].lat
+                lng1 = e.layer._latlngs[0][0].lng
+                lng2 = e.layer._latlngs[0][2].lng
+                
+                var g_lat = (lat1 + lat2) / 2
+                var g_lng = (lng1 + lng2) / 2
+
+                axios.get('https://' + config.GCP_EXT_IP + '/aoi', { params: { 'lng1': lng1, 'lng2': lng2, 'lat1': lat1, 'lat2': lat2 } })
+                    .then(res => { 
+                        console.log('input aoi', res.data) 
+                        console.log(lng1, lng2, lat1, lat2)
+                        axios.get('http://api.weatherapi.com/v1/current.json?key=' + config.WEATHER_API_KEY + '&q=' + g_lat + ',' + g_lng + '&aqi=no')
+                            .then(res => {
+                                console.log('res', res)
+                                if (res.data.location.country !== 'Thailand') {
+                                    console.log('wrong coordinates')
+                                    alert('wrong coordinates')
+                                } else {
+                                    console.log(res.data.location.country === 'Thailand', res.data.location.region)
+                                    value_wind_spe.current.value = res.data.current.wind_kph
+                                    value_wind_dir.current.value = res.data.current.wind_degree
+                                    axios.get('https://' + config.GCP_EXT_IP + '/weather', { params: { 'wind_dir': res.data.current.wind_degree, 'wind_spe': res.data.current.wind_kph } }).then(res => { console.log('input weather', res.data) })
+                                }
+                            })
+                    })  
+            })
+        }
+
+        const draw_aoi_done = (e) => {
+            console.log('--> draw_aoi_done', draw_list.length)
+            var layer = draw_list.pop()
+            map.removeLayer(layer)
+            console.log('--> draw3', draw_list.length)
+        }
+
+
 
         // const submit_search_B = useCallback((lat, lon) => {
         //     let rec = L.rectangle(L.latLng(g_lat, g_lon).toBounds(4000))
@@ -360,11 +404,13 @@ export default function DashboardContent() {
         return (
             <div>
                 <TextField label="Search field" type="search" inputRef={value_search} />
-                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_search_A} >Search</Button>
-                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_geometry}>     </Button>
-                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={draw_1}> draw_1 </Button>
-                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={draw_2}> draw_2 </Button>
-                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={draw_3}> draw_3 </Button>
+                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_search_A} >Search_A</Button>
+                {/* <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_search_B} >Search_B</Button> */}
+                {/* <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_geometry}>     </Button> */}
+                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={draw_aoi}>draw_aoi</Button>
+                {/* <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_aoi}>submit_aoi</Button> */}
+                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={draw_aoi_done}> draw_aoi_done </Button>
+                
             </div>
         )
     }
@@ -391,55 +437,7 @@ export default function DashboardContent() {
 
     
 
-    var _draw_list = []
-    
-    const draw_1 = (e) => {
-        console.log('--> draw_1')
-        if (_draw_list.length > 0) {
-            collection = []
 
-            for (let n = 0; n < _draw_list.length; n++) {
-                var geojson = _draw_list[n].toGeoJSON()
-                geojson.properties.value = 1
-                collection.push(JSON.stringify(geojson))
-            }
-
-            var fc = JSON.stringify({
-                type: 'FeatureCollection',
-                features: collection.map(JSON.parse)
-            })
-
-            console.log(fc)
-        }
-        
-        
-        var polygonDrawer = new L.Draw.Polygon(map)
-        map.on('draw:created', function (e) {
-            e.layer.addTo(map)
-            // _draw_list.push(e.layer)
-            // draw_list.push(e.layer)
-        })
-        polygonDrawer.enable()
-        
-    }
-
-
-    const draw_2 = (e) => {
-        console.log('--> draw_2')
-        for (let n = 0; n < _draw_list.length; n++) {
-            console.log(333, n, _draw_list[n])
-            map.removeLayer(_draw_list[n])
-        }
-        _draw_list = []
-    }
-
-
-    const draw_3 = (e) => {
-        console.log('--> draw3', draw_list.length)
-        
-    }
-    
-    
     // const submit_weather = () => {
         // value_wind_spe.current.value = res.data.current.wind_kph
         // // value_wind_dir.current.value = res.data.current.wind_degree
@@ -617,7 +615,11 @@ export default function DashboardContent() {
         //     console.log('draw_list.length == 0')
         // }
     }
-    
+
+
+
+    var list_fire_break = []
+
     const submit_fire_break = () => {
         if (draw_list.length > 0) {
             collection = []
@@ -626,24 +628,24 @@ export default function DashboardContent() {
                 geojson.properties.value = 1
                 collection.push(JSON.stringify(geojson))
             }
-            var features_collection = JSON.stringify({
+            var fc = JSON.stringify({
                 type: 'FeatureCollection',
                 features: collection.map(JSON.parse)
             })
-            axios.get('https://' + config.GCP_EXT_IP + '/fire_break', { params: { 'features_collection': features_collection } }).then(res => { console.log('submit fuel break', res.data) })
+            axios.get('https://' + config.GCP_EXT_IP + '/fire_break', { params: { 'features_collection': fc } })
+                .then(res => { console.log('--> submit_fire_break', res.data) })
+            
+            list_fire_break.push(fc)
+            console.log(list_fire_break.length)
         }
     }
 
 
-    const handle_change_weather = (event) => {
-        // console.log(44444, value_wind_spe.current.value, value_wind_dir.current.value)
-        
-        var spe = parseFloat(value_wind_spe.current.value) * 54.6807
-        var dir = value_wind_dir.current.value
-
+    const submit_weather = (event) => {
+        var spe = parseInt(parseFloat(value_wind_spe.current.value) * 54.6807)
+        var dir = parseInt(value_wind_dir.current.value)
+        console.log('--submit weather', spe, dir)
         axios.get('https://' + config.GCP_EXT_IP + '/weather', { params: { 'wind_dir': dir, 'wind_spe': spe } }).then(res => { console.log('input weather sent') })
-        
-        console.log(44444, value_wind_spe.current.value, value_wind_dir.current.value)
     }
 
 
@@ -745,9 +747,11 @@ export default function DashboardContent() {
     // // geometry draw
     // var candidate_geojson = []
     // var layer_aoi = []
-    var test11 = 0
-    var test22 = 0
-    var test33 = 0
+    // var test11 = 0
+    // var test22 = 0
+    // var test33 = 0
+
+    var list_fire_pred_layer =[]
 
     
     const start_fire_pred = () => {
@@ -759,47 +763,54 @@ export default function DashboardContent() {
         
 
         axios.get('https://' + config.GCP_EXT_IP + '/grass_1').then(res => { 
+            console.log('--> grass_1', res.data)
             axios.get('https://' + config.GCP_EXT_IP + '/grass_2').then(res => {
+                console.log('--> grass_2', res.data)
                 axios.get('https://' + config.GCP_EXT_IP + '/grass_3').then(res => {
+                    console.log('--> grass_3', res.data)
                     axios.get('https://' + config.GCP_EXT_IP + '/grass_4').then(res => {
+                        console.log('--> grass_4', res.data)
                         axios.get('https://' + config.GCP_EXT_IP + '/grass_5').then(res => {
+                            console.log('--> grass_5', res.data)
                             axios.get('https://' + config.GCP_EXT_IP + '/grass_6').then(res => {
+                                console.log('--> grass_6', res.data)
                                 axios.get('https://' + config.GCP_EXT_IP + '/grass_7').then(res => {
+                                    console.log('--> grass_7', res.data)
                                     axios.get('https://' + config.GCP_EXT_IP + '/grass_8').then(res => {
+                                        console.log('--> grass_8', res.data)
                                         axios.get('https://' + config.GCP_EXT_IP + '/grass_9').then(res => {
+                                            console.log('--> grass_9', res.data)
                                             axios.get('https://' + config.GCP_EXT_IP + '/grass_10').then(res => {
+                                                console.log('--> grass_10', res.data)
                                                 axios.get('https://' + config.GCP_EXT_IP + '/grass_11').then(res => {
+                                                    console.log('--> grass_11', res.data)
                                                     axios.get('https://' + config.GCP_EXT_IP + '/grass_12a')
                                                         .then(res => { 
-                                                            test11 = res.data; 
-                                                            if (test11 !== 0) { 
+                                                            if (res.data !== 0) { 
+                                                                console.log('--> grass_12a', res.data)
                                                                 var layer = L.geoJSON(res.data, { fillColor: 'red', weight: 2, opacity: 1, color: 'red', fillOpacity: 0.7 })
-                                                                console.log('test11', test11)
+                                                                list_fire_pred_layer.push(layer)
                                                                 layer.addTo(map)
                                                                 layers.push(layer)
-                                                            }}
-                                                        )
+                                                            }})
                                                     axios.get('https://' + config.GCP_EXT_IP + '/grass_12b')
                                                         .then(res => {
-                                                            test22 = res.data;
-                                                            if (test22 !== 0) {
+                                                            console.log('--> grass_12b', res.data)
+                                                            if (res.data !== 0) {
                                                                 var layer = L.geoJSON(res.data, { fillColor: 'orange', weight: 2, opacity: 1, color: 'orange', fillOpacity: 0.7 })
-                                                                console.log('test22', test22)
+                                                                list_fire_pred_layer.push(layer)
                                                                 layer.addTo(map)
                                                                 layers.push(layer)
-                                                            }}
-                                                        )
+                                                            }})
                                                     axios.get('https://' + config.GCP_EXT_IP + '/grass_12c')
                                                         .then(res => {
-                                                            test22 = res.data;
-                                                            if (test22 !== 0) {
+                                                            console.log('--> grass_12c', res.data)
+                                                            if (res.data !== 0) {
                                                                 var layer = L.geoJSON(res.data, { fillColor: 'yellow', weight: 2, opacity: 1, color: 'yellow', fillOpacity: 0.7 })
-                                                                console.log('test33', test33)
+                                                                list_fire_pred_layer.push(layer)
                                                                 layer.addTo(map)
                                                                 layers.push(layer)
-                                                            }
-                                                        }
-                                                        )
+                                                            }})
                                                 })
                                             })  
                                         })
@@ -893,17 +904,15 @@ export default function DashboardContent() {
                 <Box component="main" sx={{ backgroundColor: (theme) => theme.palette.mode === 'light' ? theme.palette.grey[100] : theme.palette.grey[900], flexGrow: 1, height: '1', overflow: 'hidden', }}>
                     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
                         <Grid container spacing={3}>
+
                             <Grid item xs={12} md={8} lg={12}>
                                 <Paper sx={{ mt: 5, p: 0, display: 'flex', flexDirection: 'column', height: 800, }}>                                    
                                     {/* <MapContainer className="markercluster-map" center={[51.0, 19.0]} zoom={4} maxZoom={18} scrollWheelZoom={false} style={{ width: '200', height: '90vh' }}> */}
-                                    
                                     {/* <MapContainer className="markercluster-map" center={[14.488396495971253, 100.6615092985177]} zoom={8} minZoom={5} maxZoom={18} scrollWheelZoom={false} > */}
                                         {/* <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors' /> */}
                                         {/* <DrawTools /> */}
                                     {/* </MapContainer> */}
                                     {MapComponent}
-                                    
-
                                 </Paper>
                             </Grid>
 
@@ -916,9 +925,9 @@ export default function DashboardContent() {
                                     <Box sx={{ marginTop: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', }}>
                                         <Typography component="h1" variant="h5"> ข้อมูลสภาพอากาศ </Typography>
                                         <FormControl sx={{ m: 1, minWidth: 250 }}>
-                                            <TextField required type='number' fullWidth variant="standard" inputRef={value_wind_spe} onChange={handle_change_weather} helperText="ทิศทางลม (องศาตามเข็มนาฬิกาจากทิศเหนือ)" />
-                                            <TextField required type='number' fullWidth variant="standard" inputRef={value_wind_dir} onChange={handle_change_weather} helperText="ความเร็วลม (กิโลเมตรต่อชั่วโมง)" />
-                                            {/* <Button type="submit" fullWidth variant="contained" sx={{ mt: 1, mb: 2 }} onClick={submit_weather}>ยืนยันข้อมูลสภาพอากาศ</Button> */}
+                                            <TextField required type='number' fullWidth variant="standard" inputRef={value_wind_spe} helperText="ทิศทางลม (องศาตามเข็มนาฬิกาจากทิศเหนือ)" />
+                                            <TextField required type='number' fullWidth variant="standard" inputRef={value_wind_dir} helperText="ความเร็วลม (กิโลเมตรต่อชั่วโมง)" />
+                                            <Button type="submit" fullWidth variant="contained" sx={{ mt: 1, mb: 2 }} onClick={submit_weather}>ยืนยันข้อมูลสภาพอากาศ</Button>
                                         </FormControl>
                                     </Box>
                                 </Paper>
