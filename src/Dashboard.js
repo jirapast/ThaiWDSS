@@ -110,8 +110,8 @@ import axios from 'axios';
 
 // import EditControl from './EditControl.js'
 
-// import {DrawTools, draw_list} from './leaflets/drawtools.js'
-import { DrawTools } from './leaflets/drawtools.js'
+import {DrawTools, draw_list} from './leaflets/drawtools.js'
+
 
 
 // import test from './leaflets/drawtools.js'
@@ -364,6 +364,7 @@ export default function DashboardContent() {
                 <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_geometry}>     </Button>
                 <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={draw_1}> draw_1 </Button>
                 <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={draw_2}> draw_2 </Button>
+                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={draw_3}> draw_3 </Button>
             </div>
         )
     }
@@ -386,30 +387,57 @@ export default function DashboardContent() {
             console.log(1231231232131, 'layer', layers)
         })
     }
+
+
     
 
-    var draw_list = []
+    var _draw_list = []
     
     const draw_1 = (e) => {
         console.log('--> draw_1')
+        if (_draw_list.length > 0) {
+            collection = []
+
+            for (let n = 0; n < _draw_list.length; n++) {
+                var geojson = _draw_list[n].toGeoJSON()
+                geojson.properties.value = 1
+                collection.push(JSON.stringify(geojson))
+            }
+
+            var fc = JSON.stringify({
+                type: 'FeatureCollection',
+                features: collection.map(JSON.parse)
+            })
+
+            console.log(fc)
+        }
+        
+        
         var polygonDrawer = new L.Draw.Polygon(map)
         map.on('draw:created', function (e) {
             e.layer.addTo(map)
-            draw_list.push(e.layer)
+            // _draw_list.push(e.layer)
+            // draw_list.push(e.layer)
         })
         polygonDrawer.enable()
+        
     }
+
 
     const draw_2 = (e) => {
         console.log('--> draw_2')
-        for (let n = 0; n < draw_list.length; n++) {
-            console.log(333, n, draw_list[n])
-            map.removeLayer(draw_list[n])
+        for (let n = 0; n < _draw_list.length; n++) {
+            console.log(333, n, _draw_list[n])
+            map.removeLayer(_draw_list[n])
         }
-        draw_list = []
+        _draw_list = []
     }
 
 
+    const draw_3 = (e) => {
+        console.log('--> draw3', draw_list.length)
+        
+    }
     
     
     // const submit_weather = () => {
@@ -535,8 +563,8 @@ export default function DashboardContent() {
 
 
     const submit_hotspot = () => {
+        console.log('submit_hotspot', draw_list.length)
         if (draw_list.length > 0) {
-            // console.log('submit_hotspot', draw_list.length)
             collection = []
 
             for (let n = 0; n < draw_list.length; n++) {
@@ -544,22 +572,17 @@ export default function DashboardContent() {
                 geojson.properties.value = 1
                 collection.push(JSON.stringify(geojson))
             }
-            
-            // console.log(321312312, collection)
 
-            var features_collection = JSON.stringify({
+            var fc = JSON.stringify({
                 type: 'FeatureCollection',
                 features: collection.map(JSON.parse)
             })
-            
-            // console.log(654564564987654, JSON.stringify(features_collection))
 
-            
-            
-            
-            
-            axios.get('https://' + config.GCP_EXT_IP + '/active_fires', { params: { 'features_collection': features_collection } }).then(res => { console.log('input draw list', res.data) })
-            
+            console.log(fc)
+
+
+            axios.get('https://' + config.GCP_EXT_IP + '/active_fires', { params: { 'features_collection': fc } }).then(res => { console.log('input draw list', res.data) })
+
             // var candy = []
             // for (let n = 0; n < draw_list.length; n++) {
             //     if (typeof(draw_list[n]._latlng) !== 'undefined') { // a point
