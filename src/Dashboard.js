@@ -751,9 +751,22 @@ export default function DashboardContent() {
     // var test22 = 0
     // var test33 = 0
 
-    var list_fire_pred_layer =[]
-
     
+
+    const damage_assess = () => {
+        console.log('--> damage_assess')
+        var which_fire_pred = 1
+        axios.get('https://' + config.GCP_EXT_IP + '/damage_assess', { params: which_fire_pred })
+            .then(res => { 
+                console.log('--> damage_assess', res.data)
+                // var layer = L.geoJSON(res.data, { fillColor: 'red', weight: 2, opacity: 1, color: 'red', fillOpacity: 0.7 })
+                // layer.addTo(map)
+            })
+    }
+
+
+    var list_fire_pred_layer = []
+
     const start_fire_pred = () => {
         // console.log(draw_list)
         // for (let i = 0; i < draw_list.length; i++) {
@@ -979,7 +992,7 @@ export default function DashboardContent() {
                                         <FormControl sx={{ m: 1, minWidth: 250 }}>
                                             <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} onClick={start_fire_pred} >การลุกลามของไฟ</Button>
                                             <Button type="submit" fullWidth variant="contained" sx={{ mt: 1, mb: 2 }} >พื้นที่ชุมชน</Button>
-                                            <Button type="submit" fullWidth variant="contained" sx={{ mt: 1, mb: 2 }} >ประเมินผลกระทบ</Button>
+                                            <Button type="submit" fullWidth variant="contained" sx={{ mt: 1, mb: 2 }} onClick={damage_assess} >ประเมินผลกระทบ</Button>
                                         </FormControl>
                                     </Box>
                                 </Paper>
