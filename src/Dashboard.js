@@ -101,7 +101,7 @@ import { useLeafletContext } from '@react-leaflet/core';
 // import { EditControl } from "react-leaflet-draw"
 // import { FeatureGroup } from 'react-leaflet';
 
-// import 'leaflet/dist/leaflet.css';
+import 'leaflet/dist/leaflet.css';
 // import 'leaflet-draw/dist/leaflet.draw.css';
 
 
@@ -268,11 +268,13 @@ export default function DashboardContent() {
     const [map, setMap] = useState(null)
 
     const MapComponent = useMemo(() => (
-        <MapContainer center={[g_lat, g_lon]} zoom={8} zoomControl={false} minZoom={5} maxZoom={18} scrollWheelZoom={false} ref={setMap}>
-            <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-            <ZoomControl position="bottomleft" />
-            <DrawTools />
-        </MapContainer>
+        <Box sx={{ ml: 10, mr: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', }}>
+            <MapContainer center={[g_lat, g_lon]} zoom={8} zoomControl={false} minZoom={5} maxZoom={18} scrollWheelZoom={false} ref={setMap}>
+                <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                <ZoomControl position="bottomleft" />
+                <DrawTools />
+            </MapContainer>
+        </Box>
     ), [])
 
     // 
@@ -918,14 +920,13 @@ export default function DashboardContent() {
                     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
                         <Grid container spacing={3}>
 
-                            <Grid item xs={12} md={8} lg={12}>
+                            <Grid item xs={12} mt={3} md={8} lg={12}>
                                 <Paper sx={{ mt: 5, p: 0, display: 'flex', flexDirection: 'column', height: 800, }}>                                    
-                                    {/* <MapContainer className="markercluster-map" center={[51.0, 19.0]} zoom={4} maxZoom={18} scrollWheelZoom={false} style={{ width: '200', height: '90vh' }}> */}
-                                    {/* <MapContainer className="markercluster-map" center={[14.488396495971253, 100.6615092985177]} zoom={8} minZoom={5} maxZoom={18} scrollWheelZoom={false} > */}
-                                        {/* <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors' /> */}
-                                        {/* <DrawTools /> */}
-                                    {/* </MapContainer> */}
-                                    {MapComponent}
+                                    {/* <div> */}
+                                        {/* {map : null} */}
+                                        {MapComponent}
+                                        {/* {displayMap} */}
+                                    {/* </div> */}
                                 </Paper>
                             </Grid>
 
@@ -1000,13 +1001,123 @@ export default function DashboardContent() {
 
                             
 
+
+                            
+
                         </Grid>
 
                     </Container>
 
+
+
+                    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+
+                        
+                        <Grid container spacing={3} direction="column">
+                            
+                            
+
+
+                            <Grid container spacing={12} direction="row">
+                                
+                                <Grid item xs={4}>
+                                    <Typography component="h1" variant="h5">Search area</Typography>
+                                </Grid>
+                                
+                                <Grid item xs={8}>
+                                    <TextField required type='number' fullWidth variant="standard" inputRef={value_wind_dir} helperText="ความเร็วลม (กิโลเมตรต่อชั่วโมง)" />
+                                </Grid>
+
+                            </Grid>
+                                    
+
+
+                            <Grid container spacing={12} direction="row">
+                                <Grid item xs={9}>
+                                    
+                                    <Grid container spacing={9} direction="column">
+                                        <Grid item xs={9}>
+                                            
+                                            
+                                            <Grid container spacing={12} direction="row">
+                                                <Grid item xs={3}>
+                                                    <Typography component="h1" variant="h5">Weather</Typography>
+                                                </Grid>
+                                                <Grid item xs={9}>
+
+
+                                                    {/* <Button type="submit" fullWidth variant="contained" size="large" sx={{ mt: 1, mb: 2 }} >2222</Button> */}
+                                                    <Grid container spacing={12} direction="row">
+                                                        <Grid item xs={6}>
+                                                            <Typography component="h1" variant="h5">Wind direction</Typography>
+                                                            <TextField required type='number' fullWidth variant="standard" inputRef={value_wind_dir} helperText="ความเร็วลม (กิโลเมตรต่อชั่วโมง)" />
+                                                        </Grid>
+                                                        <Grid item xs={6}>
+                                                            <Typography component="h1" variant="h5">wind speed</Typography>
+                                                            <TextField required type='number' fullWidth variant="standard" inputRef={value_wind_dir} helperText="ความเร็วลม (กิโลเมตรต่อชั่วโมง)" />
+                                                        </Grid>
+                                                    </Grid>
+
+
+                                                </Grid>
+                                            </Grid>
+
+                                        </Grid>
+                                        <Grid item xs={9}>
+                                            {/* <Button type="submit" fullWidth variant="contained" size="large" sx={{ mt: 1, mb: 2 }} >พื้นที่ชุมชน</Button> */}
+                                            <Grid container spacing={12} direction="row">
+                                                <Grid item xs={3}>
+                                                    <Typography component="h1" variant="h5">Active fires</Typography>
+                                                </Grid>
+                                                <Grid item xs={9}>
+                                                    <Button type="submit" fullWidth variant="contained" size="large" sx={{ mt: 1, mb: 2 }} >4444</Button>
+                                                </Grid>
+                                            </Grid>
+
+                                        </Grid>
+                                    </Grid>
+
+                                </Grid>
+
+                                
+
+                                <Grid item xs={3}>
+                                    <Button type="submit" fullWidth variant="contained" size="large" sx={{ mt: 1, mb: 2 }} >Fire break</Button>
+                                    <Button type="submit" fullWidth variant="contained" size="large" sx={{ mt: 1, mb: 2 }} >Urban area</Button>
+                                    <Button type="submit" fullWidth variant="contained" size="large" sx={{ mt: 1, mb: 2 }} >Land cover</Button>
+                                </Grid>
+
+                            </Grid>
+
+
+                        </Grid>
+
+                            
+                    </Container>
+
+
+                                {/* <Typography component="h1" variant="h5">สิ่งปลกคลุมดิน (Land Cover)</Typography> */}
+                                {/* <Button type="submit" fullWidth variant="contained" size="large" sx={{ mt: 1, mb: 2 }} >พื้นที่ชุมชน</Button> */}
+                    
+                    
+
                 </Box>
 
+
+                
+
             </Box>
+
+
+            
+                
+
+
+
+
+
+            
+
         </ThemeProvider>
     )
 }
