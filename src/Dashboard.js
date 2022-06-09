@@ -254,6 +254,13 @@ var layer_aoi = []
 var all_pick_land_cover = []
 
 
+var show_aoi = false
+var tmp_aoi = []
+
+
+// var show_fire = []
+var show_fire = [false, false, false]
+var list_fire_pred_layer = [1, 1, 1]
 
 
 export default function DashboardContent() {
@@ -268,13 +275,13 @@ export default function DashboardContent() {
     const [map, setMap] = useState(null)
 
     const MapComponent = useMemo(() => (
-        <Box sx={{ ml: 10, mr: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', }}>
+        
             <MapContainer center={[g_lat, g_lon]} zoom={8} zoomControl={false} minZoom={5} maxZoom={18} scrollWheelZoom={false} ref={setMap}>
                 <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                 <ZoomControl position="bottomleft" />
                 <DrawTools />
             </MapContainer>
-        </Box>
+        
     ), [])
 
     // 
@@ -345,50 +352,79 @@ export default function DashboardContent() {
 
         const draw_aoi = (e) => {
             console.log('--> draw_aoi')
-            new L.Draw.Rectangle(map).enable()
+            // new L.Draw.Rectangle(map).enable()
             
-            
+            // var g_lat = 0
+            // var g_lng = 0
 
-            map.on('draw:created', function (e) {
-                e.layer.addTo(map)
+            // map.on('draw:created', function (e) {
+            //     e.layer.addTo(map)
 
-                lat1 = e.layer._latlngs[0][0].lat
-                lat2 = e.layer._latlngs[0][2].lat
-                lng1 = e.layer._latlngs[0][0].lng
-                lng2 = e.layer._latlngs[0][2].lng
+            //     lat1 = e.layer._latlngs[0][0].lat
+            //     lat2 = e.layer._latlngs[0][2].lat
+            //     lng1 = e.layer._latlngs[0][0].lng
+            //     lng2 = e.layer._latlngs[0][2].lng
                 
-                var g_lat = (lat1 + lat2) / 2
-                var g_lng = (lng1 + lng2) / 2
+            //     g_lat = (lat1 + lat2) / 2
+            //     g_lng = (lng1 + lng2) / 2
 
-                axios.get('https://' + config.GCP_EXT_IP + '/aoi', { params: { 'lng1': lng1, 'lng2': lng2, 'lat1': lat1, 'lat2': lat2 } })
-                    .then(res => { 
-                        console.log('input aoi', res.data) 
-                        console.log(lng1, lng2, lat1, lat2)
-                        axios.get('http://api.weatherapi.com/v1/current.json?key=' + config.WEATHER_API_KEY + '&q=' + g_lat + ',' + g_lng + '&aqi=no')
-                            .then(res => {
-                                console.log('res', res)
-                                if (res.data.location.country !== 'Thailand') {
-                                    console.log('wrong coordinates')
-                                    alert('wrong coordinates')
-                                } else {
-                                    console.log(res.data.location.country === 'Thailand', res.data.location.region)
-                                    value_wind_spe.current.value = res.data.current.wind_kph
-                                    value_wind_dir.current.value = res.data.current.wind_degree
-                                    axios.get('https://' + config.GCP_EXT_IP + '/weather', { params: { 'wind_dir': res.data.current.wind_degree, 'wind_spe': res.data.current.wind_kph } }).then(res => { console.log('input weather', res.data) })
-                                }
-                            })
-                    })  
-            })
+                
+                
+            // })
+
+            // map.on('draw:drawstop', function (e) {
+                
+            //     axios.get('https://' + config.GCP_EXT_IP + '/aoi', { params: { 'lng1': lng1, 'lng2': lng2, 'lat1': lat1, 'lat2': lat2 } })
+            //         .then(res => {
+            //             console.log('--> draw_aoi', '/aoi', res.data)
+            //             var layer = draw_list.pop()
+            //             map.removeLayer(layer)
+            //             console.log('--> draw_aoi', 'done')
+            //         })
+
+            //     axios.get('http://api.weatherapi.com/v1/current.json?key=' + config.WEATHER_API_KEY + '&q=' + g_lat + ',' + g_lng + '&aqi=no')
+            //         .then(res => {
+            //             console.log('--> draw_aoi', 'weatherapi', res.data)
+            //             console.log('----> 111')
+            //             if (res.data.location.country !== 'Thailand') {
+            //                 console.log('wrong coordinates')
+            //                 alert('wrong coordinates')
+            //             } else {
+            //                 value_wind_spe.current.value = res.data.current.wind_kph
+            //                 value_wind_dir.current.value = res.data.current.wind_degree
+            //                 axios.get('https://' + config.GCP_EXT_IP + '/weather', { params: { 'wind_dir': res.data.current.wind_degree, 'wind_spe': res.data.current.wind_kph } })
+            //                     .then(res => {
+            //                         console.log('--> draw_aoi', '/weather', res.data)
+            //                     })
+            //             }
+
+
+                        
+
+            //         })
+
+            // })
+            
+
         }
 
-        const draw_aoi_done = (e) => {
-            console.log('--> draw_aoi_done', draw_list.length)
-            var layer = draw_list.pop()
-            map.removeLayer(layer)
-            console.log('--> draw3', draw_list.length)
+        const click_show_aoi = (e) => {
+            console.log('--> toggle_aoi')
+            show_aoi = !show_aoi
+            var aoi = L.rectangle([[lat1, lng1], [lat2, lng2]])
+            if (show_aoi==true) {
+                tmp_aoi.push(aoi)
+                console.log(show_aoi, tmp_aoi.length)
+                aoi.addTo(map)
+            } else {
+                var aoi = tmp_aoi.pop()
+                console.log(show_aoi, tmp_aoi.length)
+                map.removeLayer(aoi)
+            }
         }
 
-
+        
+        
 
         // const submit_search_B = useCallback((lat, lon) => {
         //     let rec = L.rectangle(L.latLng(g_lat, g_lon).toBounds(4000))
@@ -409,9 +445,11 @@ export default function DashboardContent() {
                 <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_search_A} >Search_A</Button>
                 {/* <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_search_B} >Search_B</Button> */}
                 {/* <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_geometry}>     </Button> */}
-                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={draw_aoi}>draw_aoi</Button>
                 {/* <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_aoi}>submit_aoi</Button> */}
-                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={draw_aoi_done}> draw_aoi_done </Button>
+                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={draw_aoi}>draw_aoi</Button>
+                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={click_show_aoi}> show_aoi </Button>
+                
+                
                 
             </div>
         )
@@ -555,8 +593,7 @@ export default function DashboardContent() {
                 if (features_collection.features.length===0) {
                     alert('hotspot data: empty array')
                 } else{
-                    console.lo('hostpot data: found, sent')
-                    axios.get('https://' + config.GCP_EXT_IP + '/test', { params: { 'features_collection': features_collection } }).then(res => { console.log('input draw list', res.data) })
+                    axios.get('https://' + config.GCP_EXT_IP + '/active_fires', { params: { 'features_collection': features_collection } }).then(res => { console.log('input draw list', res.data) })
                 }
             })
     }
@@ -767,7 +804,7 @@ export default function DashboardContent() {
     }
 
 
-    var list_fire_pred_layer = []
+    
 
     const start_fire_pred = () => {
         // console.log(draw_list)
@@ -922,11 +959,9 @@ export default function DashboardContent() {
 
                             <Grid item xs={12} mt={3} md={8} lg={12}>
                                 <Paper sx={{ mt: 5, p: 0, display: 'flex', flexDirection: 'column', height: 800, }}>                                    
-                                    {/* <div> */}
-                                        {/* {map : null} */}
+                                    
                                         {MapComponent}
-                                        {/* {displayMap} */}
-                                    {/* </div> */}
+                                        
                                 </Paper>
                             </Grid>
 
@@ -1010,7 +1045,7 @@ export default function DashboardContent() {
 
 
 
-                    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+                    {/* <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
 
                         
                         <Grid container spacing={3} direction="column">
@@ -1047,7 +1082,7 @@ export default function DashboardContent() {
 
 
                                                     {/* <Button type="submit" fullWidth variant="contained" size="large" sx={{ mt: 1, mb: 2 }} >2222</Button> */}
-                                                    <Grid container spacing={12} direction="row">
+                                                    {/* <Grid container spacing={12} direction="row">
                                                         <Grid item xs={6}>
                                                             <Typography component="h1" variant="h5">Wind direction</Typography>
                                                             <TextField required type='number' fullWidth variant="standard" inputRef={value_wind_dir} helperText="ความเร็วลม (กิโลเมตรต่อชั่วโมง)" />
@@ -1065,7 +1100,7 @@ export default function DashboardContent() {
                                         </Grid>
                                         <Grid item xs={9}>
                                             {/* <Button type="submit" fullWidth variant="contained" size="large" sx={{ mt: 1, mb: 2 }} >พื้นที่ชุมชน</Button> */}
-                                            <Grid container spacing={12} direction="row">
+                                            {/* <Grid container spacing={12} direction="row">
                                                 <Grid item xs={3}>
                                                     <Typography component="h1" variant="h5">Active fires</Typography>
                                                 </Grid>
@@ -1087,13 +1122,13 @@ export default function DashboardContent() {
                                     <Button type="submit" fullWidth variant="contained" size="large" sx={{ mt: 1, mb: 2 }} >Land cover</Button>
                                 </Grid>
 
-                            </Grid>
+                            // </Grid>
 
 
-                        </Grid>
+                        // </Grid>
 
                             
-                    </Container>
+                    // </Container> */}
 
 
                                 {/* <Typography component="h1" variant="h5">สิ่งปลกคลุมดิน (Land Cover)</Typography> */}
