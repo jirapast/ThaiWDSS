@@ -1,0 +1,403 @@
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.rectangleDiv {
+  border-radius: 0 0 50px 0;
+  background-color: #000;
+}
+.bgDiv,
+.languageDiv,
+.rectangleDiv {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1440px;
+  height: 132px;
+}
+.languageDiv {
+  top: 151px;
+  left: 1208px;
+  background-color: #f6f6f6;
+  width: 151px;
+  height: 51px;
+}
+.engDiv,
+.wildFireSituation1 {
+  position: absolute;
+  display: inline-block;
+}
+.engDiv {
+  top: 161px;
+  left: 1284px;
+  font-size: 24px;
+}
+.wildFireSituation1 {
+  height: 100%;
+  width: 100%;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+.wildFireSituation {
+  position: absolute;
+  top: 163px;
+  left: 306px;
+  width: 388px;
+  height: 42px;
+  font-size: 40px;
+  font-family: Bakbak One;
+}
+.rectangleDiv1 {
+  position: absolute;
+  top: 289px;
+  left: 46px;
+  border-radius: 20px;
+  background-color: #fafafa;
+  box-shadow: 5px 4px 15px rgba(0, 0, 0, 0.07);
+  width: 148px;
+  height: 60px;
+}
+.dashboardDiv {
+  position: absolute;
+  top: 307px;
+  left: 68px;
+  font-family: Inter;
+  display: inline-block;
+}
+.rectangleDiv2 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: #a75151;
+  width: 144px;
+  height: 65px;
+}
+.lOGODiv {
+  position: absolute;
+  top: 20px;
+  left: 44px;
+  display: inline-block;
+}
+.logoDiv {
+  position: absolute;
+  top: 34px;
+  left: 68px;
+  width: 144px;
+  height: 65px;
+  font-family: Inter;
+}
+.rectangleIcon {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: cover;
+}
+.mapDiv,
+.rectangleDiv3 {
+  position: absolute;
+  top: 233px;
+  left: 252px;
+  width: 1107px;
+  height: 454px;
+}
+.rectangleDiv3 {
+  top: 717px;
+  left: 413px;
+  border-radius: 16px;
+  background-color: #fff;
+  width: 768px;
+  height: 48px;
+}
+.searchAreaDiv,
+.weatherDiv,
+.wildfirePointDiv {
+  position: absolute;
+  top: 725px;
+  left: 252px;
+  font-size: 24px;
+  display: inline-block;
+}
+.weatherDiv,
+.wildfirePointDiv {
+  top: 928px;
+  left: 251px;
+}
+.weatherDiv {
+  top: 798px;
+  left: 252px;
+}
+.rectangleDiv4 {
+  position: absolute;
+  top: 790px;
+  left: 413px;
+  border-radius: 20px;
+  background-color: #fff;
+  width: 532px;
+  height: 103px;
+}
+.windVelocityDiv {
+  top: 807px;
+  left: 469px;
+  font-size: 16px;
+}
+.typeAreaOrLATLONG,
+.windDirection,
+.windVelocityDiv {
+  position: absolute;
+  display: inline-block;
+}
+.windDirection {
+  top: 807px;
+  left: 687px;
+  font-size: 16px;
+}
+.typeAreaOrLATLONG {
+  top: 729px;
+  left: 465px;
+  font-family: Inter;
+  color: #bababa;
+}
+.rectangleDiv5,
+.rectangleDiv6 {
+  position: absolute;
+  top: 838px;
+  left: 465px;
+  border-radius: 20px;
+  background-color: #e8e8e8;
+  width: 128px;
+  height: 28px;
+}
+.rectangleDiv6 {
+  left: 683px;
+}
+.degreeDiv,
+.kmhrDiv,
+.xXDiv,
+.xXDiv1 {
+  position: absolute;
+  top: 843px;
+  left: 738px;
+  font-size: 14px;
+  display: inline-block;
+}
+.degreeDiv,
+.kmhrDiv,
+.xXDiv1 {
+  top: 844px;
+  left: 825px;
+}
+.kmhrDiv,
+.xXDiv1 {
+  left: 516px;
+}
+.kmhrDiv {
+  left: 607px;
+}
+.inDecreaseIcon,
+.inDecreaseIcon1 {
+  position: absolute;
+  height: 1.11%;
+  width: 0.42%;
+  top: 72.37%;
+  right: 59.58%;
+  bottom: 26.52%;
+  left: 40%;
+  max-width: 100%;
+  max-height: 100%;
+}
+.inDecreaseIcon1 {
+  right: 44.44%;
+  left: 55.14%;
+}
+.rectangleDiv7,
+.rectangleDiv8,
+.rectangleDiv9 {
+  position: absolute;
+  top: 928px;
+  left: 413px;
+  border-radius: 20px;
+  background-color: #f2f2f2;
+  width: 532px;
+  height: 181px;
+}
+.rectangleDiv8,
+.rectangleDiv9 {
+  top: 978px;
+  border-radius: 0 20px 20px 20px;
+  background-color: #fff;
+  height: 131px;
+}
+.rectangleDiv9 {
+  top: 928px;
+  border-radius: 20px 20px 0 0;
+  width: 266px;
+  height: 50px;
+}
+.customDiv,
+.importFromFIRMS {
+  position: absolute;
+  top: 944px;
+  left: 734px;
+  display: inline-block;
+}
+.customDiv {
+  left: 507px;
+}
+.rectangleDiv10 {
+  position: absolute;
+  top: 426px;
+  left: 270px;
+  background-color: #fff;
+  width: 22px;
+  height: 242px;
+}
+.vectorIcon {
+  position: absolute;
+  height: 0.43%;
+  width: 0.69%;
+  top: 15.23%;
+  right: 6.6%;
+  bottom: 84.35%;
+  left: 92.71%;
+  max-width: 100%;
+  max-height: 100%;
+}
+.rectangleDiv11 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 6px;
+  background-color: #0072b2;
+  width: 183px;
+  height: 36px;
+}
+.firebreakDiv {
+  position: absolute;
+  top: 2px;
+  left: 52px;
+  display: inline-block;
+}
+.vectorIcon1 {
+  position: absolute;
+  height: 46.51%;
+  width: 10.93%;
+  top: 18.6%;
+  right: 81.42%;
+  bottom: 34.88%;
+  left: 7.65%;
+  max-width: 100%;
+  max-height: 100%;
+}
+.fbDiv {
+  position: relative;
+  width: 183px;
+  height: 43px;
+  flex-shrink: 0;
+}
+.rectangleDiv12 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 6px;
+  background-color: #8e0000;
+  width: 183px;
+  height: 36px;
+}
+.urbanAreaDiv {
+  position: absolute;
+  top: 3px;
+  left: 52px;
+  display: inline-block;
+}
+.vectorIcon2 {
+  position: absolute;
+  height: 45.45%;
+  width: 10.93%;
+  top: 18.18%;
+  right: 81.42%;
+  bottom: 36.36%;
+  left: 7.65%;
+  max-width: 100%;
+  max-height: 100%;
+}
+.uaDiv {
+  position: relative;
+  width: 183px;
+  height: 44px;
+  flex-shrink: 0;
+}
+.rectangleDiv13 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 6px;
+  background-color: #008425;
+  width: 183px;
+  height: 36px;
+}
+.frameDiv {
+  position: absolute;
+  top: 802px;
+  left: 998px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  font-size: 24px;
+  color: #fff;
+}
+.frameDiv > * + * {
+  margin-top: 27px;
+}
+.useToolAboveToSetWildfire {
+  position: absolute;
+  top: 1027px;
+  left: 519px;
+  letter-spacing: 0.05em;
+  color: #a7a7a7;
+  display: inline-block;
+}
+.rectangleDiv14 {
+  position: absolute;
+  top: 718px;
+  left: 1117px;
+  border-radius: 16px;
+  background-color: #bd4e4e;
+  width: 64px;
+  height: 48px;
+}
+.windowCloseIcon {
+  position: absolute;
+  top: 730px;
+  left: 1137px;
+  width: 24px;
+  height: 24px;
+  overflow: hidden;
+}
+.frameHeader {
+  position: relative;
+  background-color: #e4e4e4;
+  width: 100%;
+  height: 1169px;
+  overflow: hidden;
+  opacity: 0;
+  text-align: left;
+  font-size: 20px;
+  color: #000;
+  font-family: Anek Devanagari;
+}
+.frameHeader.animate {
+  animation: 1s ease 0s 1 normal forwards fade-in;
+}

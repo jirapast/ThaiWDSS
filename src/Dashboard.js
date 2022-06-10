@@ -260,7 +260,8 @@ var tmp_aoi = []
 
 // var show_fire = []
 var show_fire = [false, false, false]
-var list_fire_pred_layer = [1, 1, 1]
+// var list_fire_pred_layer = [1, 1, 1]
+var list_fire_pred_layer = [ ]
 
 
 export default function DashboardContent() {
@@ -350,77 +351,52 @@ export default function DashboardContent() {
         
         
 
-        const draw_aoi = (e) => {
-            console.log('--> draw_aoi')
-            // new L.Draw.Rectangle(map).enable()
-            
-            // var g_lat = 0
-            // var g_lng = 0
+        const submit_aoi = () => {
+            console.log('submit_aoi')
 
-            // map.on('draw:created', function (e) {
-            //     e.layer.addTo(map)
+            if (draw_list.length > 0) {
+                lat2 = draw_list[0]._bounds._northEast.lat
+                lat1 = draw_list[0]._bounds._southWest.lat
+                lng2 = draw_list[0]._bounds._northEast.lng
+                lng1 = draw_list[0]._bounds._southWest.lng
+                axios.get('https://' + config.GCP_EXT_IP + '/aoi', { params: { 'lng1': lng1, 'lng2': lng2, 'lat1': lat1, 'lat2': lat2 } }).then(res => { console.log('input aoi', res.data) })
+                console.log('location not found then use default coordinates', lng1, lng2, lat1, lat2)
+            } else {
+                console.log('draw_list empty')
+            }
 
-            //     lat1 = e.layer._latlngs[0][0].lat
-            //     lat2 = e.layer._latlngs[0][2].lat
-            //     lng1 = e.layer._latlngs[0][0].lng
-            //     lng2 = e.layer._latlngs[0][2].lng
-                
-            //     g_lat = (lat1 + lat2) / 2
-            //     g_lng = (lng1 + lng2) / 2
+            axios.get('http://api.weatherapi.com/v1/current.json?key=' + config.WEATHER_API_KEY + '&q=' + g_lat + ',' + g_lon + '&aqi=no')
+                .then(res => {
+                    if (res.data.location.country !== 'Thailand') {
+                        console.log('wrong coordinates')
+                        alert('wrong coordinates')
+                    } else {
+                        console.log(res.data.location.country === 'Thailand', res.data.location.region)
+                        value_wind_spe.current.value = res.data.current.wind_kph
+                        value_wind_dir.current.value = res.data.current.wind_degree
+                        axios.get('https://' + config.GCP_EXT_IP + '/weather', { params: { 'wind_dir': res.data.current.wind_degree, 'wind_spe': res.data.current.wind_kph } }).then(res => { console.log('input weather', res.data) })
+                    }
+                }).catch(err => console.log(err.data))
 
-                
-                
-            // })
-
-            // map.on('draw:drawstop', function (e) {
-                
-            //     axios.get('https://' + config.GCP_EXT_IP + '/aoi', { params: { 'lng1': lng1, 'lng2': lng2, 'lat1': lat1, 'lat2': lat2 } })
-            //         .then(res => {
-            //             console.log('--> draw_aoi', '/aoi', res.data)
-            //             var layer = draw_list.pop()
-            //             map.removeLayer(layer)
-            //             console.log('--> draw_aoi', 'done')
-            //         })
-
-            //     axios.get('http://api.weatherapi.com/v1/current.json?key=' + config.WEATHER_API_KEY + '&q=' + g_lat + ',' + g_lng + '&aqi=no')
-            //         .then(res => {
-            //             console.log('--> draw_aoi', 'weatherapi', res.data)
-            //             console.log('----> 111')
-            //             if (res.data.location.country !== 'Thailand') {
-            //                 console.log('wrong coordinates')
-            //                 alert('wrong coordinates')
-            //             } else {
-            //                 value_wind_spe.current.value = res.data.current.wind_kph
-            //                 value_wind_dir.current.value = res.data.current.wind_degree
-            //                 axios.get('https://' + config.GCP_EXT_IP + '/weather', { params: { 'wind_dir': res.data.current.wind_degree, 'wind_spe': res.data.current.wind_kph } })
-            //                     .then(res => {
-            //                         console.log('--> draw_aoi', '/weather', res.data)
-            //                     })
-            //             }
-
-
-                        
-
-            //         })
-
-            // })
-            
-
+            draw_list.pop()
+            console.log(32131231, draw_list.length)
         }
 
-        const click_show_aoi = (e) => {
-            console.log('--> toggle_aoi')
-            show_aoi = !show_aoi
-            var aoi = L.rectangle([[lat1, lng1], [lat2, lng2]])
-            if (show_aoi==true) {
-                tmp_aoi.push(aoi)
-                console.log(show_aoi, tmp_aoi.length)
-                aoi.addTo(map)
-            } else {
-                var aoi = tmp_aoi.pop()
-                console.log(show_aoi, tmp_aoi.length)
-                map.removeLayer(aoi)
-            }
+        // var show_fire = [false, false, false]
+        // var list_fire_pred_layer = [1, 1, 1]
+
+        const save = (e) => {
+            console.log('save')
+        }
+
+        const click_show_aoi = (e) => {    
+            show_fire[0] = !show_fire[0]
+            show_fire[1] = !show_fire[1]
+            show_fire[2] = !show_fire[2]
+
+            if (show_fire[0] == true) { list_fire_pred_layer[0].addTo(map) } else { map.removeLayer(list_fire_pred_layer[0]) }
+            if (show_fire[1] == true) { list_fire_pred_layer[1].addTo(map) } else { map.removeLayer(list_fire_pred_layer[1]) }
+            if (show_fire[2] == true) { list_fire_pred_layer[2].addTo(map) } else { map.removeLayer(list_fire_pred_layer[2]) }
         }
 
         
@@ -446,8 +422,10 @@ export default function DashboardContent() {
                 {/* <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_search_B} >Search_B</Button> */}
                 {/* <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_geometry}>     </Button> */}
                 {/* <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_aoi}>submit_aoi</Button> */}
-                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={draw_aoi}>draw_aoi</Button>
-                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={click_show_aoi}> show_aoi </Button>
+                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_aoi}>submit_aoi</Button>
+                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={click_show_aoi}>test</Button>
+
+                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={save}>save</Button>
                 
                 
                 
@@ -614,10 +592,7 @@ export default function DashboardContent() {
                 type: 'FeatureCollection',
                 features: collection.map(JSON.parse)
             })
-
-            console.log(fc)
-
-
+            // console.log(fc)
             axios.get('https://' + config.GCP_EXT_IP + '/active_fires', { params: { 'features_collection': fc } }).then(res => { console.log('input draw list', res.data) })
 
             // var candy = []
@@ -650,9 +625,7 @@ export default function DashboardContent() {
             // console.log(candy)
             
         }
-        // else {
-        //     console.log('draw_list.length == 0')
-        // }
+        
     }
 
 
@@ -843,6 +816,7 @@ export default function DashboardContent() {
                                                                 var layer = L.geoJSON(res.data, { fillColor: 'red', weight: 2, opacity: 1, color: 'red', fillOpacity: 0.7 })
                                                                 list_fire_pred_layer.push(layer)
                                                                 layer.addTo(map)
+                                                                show_fire[0] = true
                                                                 layers.push(layer)
                                                             }})
                                                     axios.get('https://' + config.GCP_EXT_IP + '/grass_12b')
@@ -852,6 +826,7 @@ export default function DashboardContent() {
                                                                 var layer = L.geoJSON(res.data, { fillColor: 'orange', weight: 2, opacity: 1, color: 'orange', fillOpacity: 0.7 })
                                                                 list_fire_pred_layer.push(layer)
                                                                 layer.addTo(map)
+                                                                show_fire[1] = true
                                                                 layers.push(layer)
                                                             }})
                                                     axios.get('https://' + config.GCP_EXT_IP + '/grass_12c')
@@ -861,6 +836,7 @@ export default function DashboardContent() {
                                                                 var layer = L.geoJSON(res.data, { fillColor: 'yellow', weight: 2, opacity: 1, color: 'yellow', fillOpacity: 0.7 })
                                                                 list_fire_pred_layer.push(layer)
                                                                 layer.addTo(map)
+                                                                show_fire[2] = true
                                                                 layers.push(layer)
                                                             }})
                                                 })
