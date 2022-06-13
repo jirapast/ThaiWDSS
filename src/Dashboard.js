@@ -37,6 +37,16 @@ import Button from '@mui/material/Button';
 // import BarChartIcon from '@mui/icons-material/BarChart';
 // import LayersIcon from '@mui/icons-material/Layers';
 import AssignmentIcon from '@mui/icons-material/Assignment';
+// import * as React from 'react';
+// import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+// import ListItemIcon from '@mui/material/ListItemIcon';
+// import ListItemText from '@mui/material/ListItemText';
+import ListSubheader from '@mui/material/ListSubheader';
+import Switch from '@mui/material/Switch';
+import WifiIcon from '@mui/icons-material/Wifi';
+import BluetoothIcon from '@mui/icons-material/Bluetooth';
+
 // import Dialog from '@mui/material/Dialog';
 // import DialogActions from '@mui/material/DialogActions';
 // import DialogContent from '@mui/material/DialogContent';
@@ -51,6 +61,8 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 // import ShowChartRoundedIcon from '@mui/icons-material/ShowChartRounded';
 // import RadioButtonUncheckedRoundedIcon from '@mui/icons-material/RadioButtonUncheckedRounded';
 import InputLabel from '@mui/material/InputLabel';
+// import { FixedSizeList } from 'react-window';
+
 // import MenuItem from '@mui/material/MenuItem';
 // import Select from '@mui/material/Select';
 // import SwipeableDrawer from '@mui/material/SwipeableDrawer';
@@ -95,6 +107,7 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 // import AssignmentIcon from '@mui/icons-material/Assignment';
 import axios from 'axios';
 
+import CommentIcon from '@mui/icons-material/Comment';
 
 import { useLeafletContext } from '@react-leaflet/core';
 
@@ -207,7 +220,6 @@ var collection = {
 // }
 
 
-
 const mainListItems = (
     <React.Fragment>
         <ListItemButton>
@@ -260,8 +272,9 @@ var tmp_aoi = []
 
 // var show_fire = []
 var show_fire = [false, false, false]
-// var list_fire_pred_layer = [1, 1, 1]
+
 var list_fire_pred_layer = [ ]
+var save_list_fire_pred_layer = []
 
 
 export default function DashboardContent() {
@@ -314,6 +327,7 @@ export default function DashboardContent() {
                         lng1 = rec.getBounds()._southWest.lng
                         axios.get('https://' + config.GCP_EXT_IP + '/aoi', { params: { 'lng1': lng1, 'lng2': lng2, 'lat1': lat1, 'lat2': lat2 } }).then(res => { console.log('input aoi', res.data) })
                         console.log('location not found then use default coordinates', lng1, lng2, lat1, lat2)
+                        tmp_aoi.push(rec)
                     } else {
                         g_lat = res[0].lat
                         g_lon = res[0].lon
@@ -322,7 +336,6 @@ export default function DashboardContent() {
                         rec.addTo(map)
                         layer_aoi.push(rec)
                         map.fitBounds(rec.getBounds())
-
                         lat2 = rec.getBounds()._northEast.lat
                         lng2 = rec.getBounds()._northEast.lng
                         lat1 = rec.getBounds()._southWest.lat
@@ -331,6 +344,7 @@ export default function DashboardContent() {
                         console.log('location found')
                         console.log(lng1, lng2, lat1, lat2)
                         // map.setView([lat, lon], 15)
+                        tmp_aoi.push(rec)
                     }
                 }).catch((error) => { console.log(error) })
 
@@ -346,6 +360,7 @@ export default function DashboardContent() {
                             axios.get('https://' + config.GCP_EXT_IP + '/weather', { params: { 'wind_dir': res.data.current.wind_degree, 'wind_spe': res.data.current.wind_kph } }).then(res => { console.log('input weather', res.data) })
                         }
                     }).catch(err => console.log(err.data))
+            
         }
 
         
@@ -353,6 +368,7 @@ export default function DashboardContent() {
 
         const submit_aoi = () => {
             console.log('submit_aoi')
+            tmp_aoi.pop()
 
             if (draw_list.length > 0) {
                 lat2 = draw_list[0]._bounds._northEast.lat
@@ -378,18 +394,43 @@ export default function DashboardContent() {
                     }
                 }).catch(err => console.log(err.data))
 
-            draw_list.pop()
+            var aoi = draw_list.pop()
+            tmp_aoi.push(aoi)
             console.log(32131231, draw_list.length)
         }
-
+        
+        const click_show_aoi = (e) => {
+            console.log('click_show_aoi')
+            show_aoi = !show_aoi
+            if (show_aoi) { 
+                tmp_aoi[0].addTo(map) 
+            } else { 
+                map.removeLayer(tmp_aoi[0])
+            }
+        }
         // var show_fire = [false, false, false]
         // var list_fire_pred_layer = [1, 1, 1]
 
         const save = (e) => {
             console.log('save')
+            console.log(list_fire_pred_layer)
+
+            save_list_fire_pred_layer.push(list_fire_pred_layer[0])
+            save_list_fire_pred_layer.push(list_fire_pred_layer[1])
+            save_list_fire_pred_layer.push(list_fire_pred_layer[2])
+            console.log('save_list_fire_pred_layer.length', save_list_fire_pred_layer.length)
         }
 
-        const click_show_aoi = (e) => {    
+        const list = (e) => {
+            console.log('--- list ---')
+            
+        }
+
+
+        
+
+
+        const click_show_fire = (e) => {    
             show_fire[0] = !show_fire[0]
             show_fire[1] = !show_fire[1]
             show_fire[2] = !show_fire[2]
@@ -398,6 +439,7 @@ export default function DashboardContent() {
             if (show_fire[1] == true) { list_fire_pred_layer[1].addTo(map) } else { map.removeLayer(list_fire_pred_layer[1]) }
             if (show_fire[2] == true) { list_fire_pred_layer[2].addTo(map) } else { map.removeLayer(list_fire_pred_layer[2]) }
         }
+
 
         
         
@@ -423,9 +465,14 @@ export default function DashboardContent() {
                 {/* <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_geometry}>     </Button> */}
                 {/* <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_aoi}>submit_aoi</Button> */}
                 <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_aoi}>submit_aoi</Button>
-                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={click_show_aoi}>test</Button>
+                
+                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={click_show_aoi}>click_show_aoi</Button>
+                
+                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={click_show_fire}>click_show_fire</Button>
 
                 <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={save}>save</Button>
+                
+                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={list}>list</Button>
                 
                 
                 
@@ -875,7 +922,20 @@ export default function DashboardContent() {
         setLang(event.target.value)
         console.log('Lang', lang)
     };
-
+    
+    const initialList = [
+        {
+            id: 'a',
+            task: 'Learn React',
+            isComplete: false,
+        },
+        {
+            id: 'b',
+            task: 'Learn GraphQL',
+            isComplete: true,
+        },
+    ];
+        
 
 
     return (
@@ -1010,9 +1070,19 @@ export default function DashboardContent() {
                                 </Paper>
                             </Grid>
 
+                            <Grid item xs={6}>
+                                <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
+
+                                  
+                                  
+                                </Paper>
+                            </Grid>
+
                             
 
-
+                            {/* https://firms.modaps.eosdis.nasa.gov/api/area/csv/da9fbf64257959120af01dbc6211339c/VIIRS_SNPP_SP/
+                            98.88381238789997,18.82340549445857,98.92177941210004,18.859338105541433 */}
+                            /1/2022-06-13
                             
 
                         </Grid>
