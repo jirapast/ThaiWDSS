@@ -1,10 +1,36 @@
-import geopandas 
-import json
+import pandas as pd
+import osmnx as ox
 
 
-g1 = geopandas.read_file('buildings-clean.geojson')
+place_name = ['Nauru', 'Lakeba Island']
 
-print(g1.head())
+tags = {'building': True}
+
+gdfs = []
+for i in place_name:
+    gdf = ox.geometries_from_place(i, tags)
+    gdf["island_name"] = i  # this adds a column with a name
+    gdfs.append(gdf)
+
+gdf = pd.concat(gdfs)
+print(gdf)
+
+
+
+
+
+
+
+
+
+
+# import geopandas 
+# import json
+
+
+# g1 = geopandas.read_file('buildings-clean.geojson')
+
+# print(g1.head())
     
     
 
