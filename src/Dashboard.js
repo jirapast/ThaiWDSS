@@ -132,6 +132,8 @@ import { DrawTools, draw_list } from './leaflets/drawtools.js'
 // import test from './leaflets/drawtools.js'
 import config from './config.json'
 import { CountertopsSharp, PersonRemoveAlt1TwoTone } from '@mui/icons-material';
+import * as turf from '@turf/turf'
+const { featureCollection, point, overlaps } = require('@turf/helpers')
 
 
 
@@ -272,6 +274,9 @@ var tmp_aoi = []
 var show_build = false 
 var tmp_build = 0
 
+var show_build_2 = false
+var tmp_build_2 = 0
+
 // var show_fire = []
 var show_fire = [false, false, false]
 
@@ -282,6 +287,12 @@ var lat1 = ''
 var lat2 = ''
 var lng1 = ''
 var lng2 = ''
+
+var res_data_build = ''
+
+var res_data_fire_a = ''
+var res_data_fire_b = ''
+var res_data_fire_c = ''
 
 var list_build = []
 var list_add_layer = []
@@ -315,6 +326,7 @@ export default function DashboardContent() {
     // 
     const value_wind_spe = useRef()
     const value_wind_dir = useRef()
+    const H = useRef()
     
 
     // 
@@ -327,8 +339,8 @@ export default function DashboardContent() {
             const Nominatim = require('nominatim-geocoder')
             const geocoder = new Nominatim()
             // var s = 'Bangkok, Thailand'
-            // var s = value_search.current.value
-            var s = '18.858594937279616, 98.90703141689299'
+            var s = value_search.current.value
+            // var s = '18.858594937279616, 98.90703141689299'
             if (tmp_aoi.length > 0) {
                 map.removeLayer(tmp_aoi.pop())
                 tmp_aoi = []
@@ -384,6 +396,94 @@ export default function DashboardContent() {
             
         }
 
+        const submit_search_B = () => {
+            console.log('ioio')
+            const Nominatim = require('nominatim-geocoder')
+            const geocoder = new Nominatim()
+            // var s = 'Bangkok, Thailand'
+            // var s = value_search.current.value
+            var s = '18.858594937279616, 98.90703141689299'
+            if (tmp_aoi.length > 0) {
+                map.removeLayer(tmp_aoi.pop())
+                tmp_aoi = []
+            }
+            console.log('rrrrr')
+            geocoder.search({ q: s })
+                .then((res) => {
+                    if (typeof (res[0]) == 'undefined') {
+                        let rec = L.rectangle(L.latLng(g_lat, g_lon).toBounds(4000))
+                        // rec.addTo(map)
+                        layer_aoi.push(rec)
+                        map.fitBounds(rec.getBounds())
+                        lat2 = rec.getBounds()._northEast.lat
+                        lng2 = rec.getBounds()._northEast.lng
+                        lat1 = rec.getBounds()._southWest.lat
+                        lng1 = rec.getBounds()._southWest.lng
+                        axios.get('https://' + config.GCP_EXT_IP + '/aoi', { params: { 'lng1': lng1, 'lng2': lng2, 'lat1': lat1, 'lat2': lat2 } }).then(res => { console.log('input aoi', res.data) })
+                        console.log('location not found then use default coordinates', lng1, lng2, lat1, lat2)
+                        tmp_aoi.push(rec)
+                        console.log('tmp_aoi', tmp_aoi)
+                    } else {
+                        g_lat = res[0].lat
+                        g_lon = res[0].lon
+                        console.log('location found', g_lat, g_lon)
+                        let rec = L.rectangle(L.latLng(g_lat, g_lon).toBounds(4000))
+                        rec.addTo(map)
+                        layer_aoi.push(rec)
+                        map.fitBounds(rec.getBounds())
+                        lat2 = rec.getBounds()._northEast.lat
+                        lng2 = rec.getBounds()._northEast.lng
+                        lat1 = rec.getBounds()._southWest.lat
+                        lng1 = rec.getBounds()._southWest.lng
+                        axios.get('https://' + config.GCP_EXT_IP + '/aoi', { params: { 'lng1': lng1, 'lng2': lng2, 'lat1': lat1, 'lat2': lat2 } }).then(res => { console.log('input aoi', res.data) })
+                        console.log('location found')
+                        console.log(lng1, lng2, lat1, lat2)
+                        // map.setView([lat, lon], 15)
+                        tmp_aoi.push(rec)
+                        console.log('tmp_aoi', tmp_aoi)
+                    }
+                }).catch((error) => { console.log(error) })
+
+            console.log('rrrrroooo')
+            axios.get('http://api.weatherapi.com/v1/current.json?key=' + config.WEATHER_API_KEY + '&q=' + g_lat + ',' + g_lon + '&aqi=no')
+                .then(res => {
+                    if (res.data.location.country !== 'Thailand') {
+                        console.log('wrong coordinates')
+                        alert('wrong coordinates')
+                    } else {
+                        console.log(res.data.location.country === 'Thailand', res.data.location.region)
+                        value_wind_spe.current.value = res.data.current.wind_kph
+                        value_wind_dir.current.value = res.data.current.wind_degree
+                        axios.get('https://' + config.GCP_EXT_IP + '/weather', { params: { 'wind_dir': res.data.current.wind_degree, 'wind_spe': res.data.current.wind_kph } }).then(res => { console.log('input weather', res.data) })
+                    }
+                }).catch(err => console.log(err.data))
+
+                
+            console.log('search_B')
+            // for case study 1
+            var _draw_list = [(101.179977, 14.355058), (101.175804, 14.357852), (101.18306, 14.358931), (101.179482, 14.358399), (101.173531, 14.35034), (101.1856, 14.352264), (101.186043, 14.356215), (101.182411, 14.364918)]
+            console.log('submit_hotspot', _draw_list.length)
+            if (_draw_list.length > 0) {
+                collection = []
+
+                for (let n = 0; n < _draw_list.length; n++) {
+                    var geojson = _draw_list[n].toGeoJSON()
+                    geojson.properties.value = 1
+                    collection.push(JSON.stringify(geojson))
+                }
+
+                var fc = JSON.stringify({
+                    type: 'FeatureCollection',
+                    features: collection.map(JSON.parse)
+                })
+                axios.get('https://' + config.GCP_EXT_IP + '/active_fires', { params: { 'features_collection': fc } }).then(res => { console.log('input draw list', res.data) })
+
+            }
+            // 
+
+
+        }
+
         
         
 
@@ -421,6 +521,7 @@ export default function DashboardContent() {
             console.log(32131231, lat1, lat2)
             console.log(32131231, lng1, lng2)
         }
+
         
         const click_show_aoi = (e) => {
             show_aoi = !show_aoi
@@ -488,8 +589,8 @@ export default function DashboardContent() {
         return (
             <div>
                 <TextField label="Search field" type="search" inputRef={value_search} />
-                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_search_A} >Search_A</Button>
-                {/* <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_search_B} >Search_B</Button> */}
+                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_search_A} >Search</Button>
+                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_search_B} >Search_B</Button>
                 {/* <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_geometry}>     </Button> */}
                 {/* <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_aoi}>submit_aoi</Button> */}
                 <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_aoi}>submit_aoi</Button>
@@ -500,9 +601,9 @@ export default function DashboardContent() {
                 
                 <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={click_show_build}>click_show_build</Button>
 
-                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={save}>save</Button>
+                {/* <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={save}>save</Button> */}
                 
-                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={list}>list</Button>
+                {/* <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={list}>list</Button> */}
                 
                 
                 
@@ -844,44 +945,51 @@ export default function DashboardContent() {
 
     const damage_assess = () => {
         console.log('--> damage_assess')
+        
+        // console.log(x['features'][0]['geometry']['type'])
+        // console.log(22228)
+        // console.log(x['features'][0]['geometry']['coordinates'])
 
+        if (assess_fire.length==0) {return}
+        if (assess_build.length == 0) { return }
+        
 
         // for (let i = 0; i < list_build.length; i++) {
         //     console.lo(111, list_add_layer[i])
         // }
 
-        count = 0
+        var count = 0
+
 
         for (let i = 0; i < assess_fire.length; i++) {
-            _f_ = assess_fire[i]['features'][0]['geometry']['coordinates']
-            for (let j = 0; j < assess_build.length; j++) {
-                _b_ = assess_build[j]['features'][0]['geometry']['coordinates']
+            // if (assess_fire[i]['features'][0]['geometry']['type'] == 'Polygon') {
 
+            var _f_ = assess_fire[i]['features'][0]['geometry']['coordinates']
+
+            for (let j = 0; j < assess_build.length; j++) {
+        //             console.log(123, assess_build[j]['features'][0]['geometry']['type'] == 'Polygon')
+                    // if (assess_build[j]['features'][0]['geometry']['type']=='Polygon') {
+                var _b_ = assess_build[j]['features'][0]['geometry']['coordinates']
+                        
                 var poly1 = turf.polygon([_f_])
                 var poly2 = turf.polygon([_b_])
-
+                        
                 if (overlaps(poly1, poly2)) {
                     count += 1
                 }
+    
+        
             }
+
         }
-        consol.log('damage assess : answer =', count)
+        console.log('damage assess : answer =', count)
         
 
 
-        var poly1 = turf.polygon([
-            [
-            [0, 0],
-            [0, 2],
-            [2, 2],
-            [2, 0],
-            [0, 0]
-        ]
-    ]);
 
 
         // var which_fire_pred = 1
-        // axios.get('https://' + config.GCP_EXT_IP + '/damage_assess', { params: which_fire_pred })
+        // axios.get('https://' + config.GCP_EXT_IP + '/damage_assess', { params: {'assess_fire':[res_data_fire_a,res_data_fire_b,res_data_fire_c], 'assess_build':res_data_build} })
         //     .then(res => { 
         //         console.log('--> damage_assess', res.data)
         //         // var layer = L.geoJSON(res.data, { fillColor: 'red', weight: 2, opacity: 1, color: 'red', fillOpacity: 0.7 })
@@ -910,7 +1018,7 @@ export default function DashboardContent() {
                 map.removeLayer(layer)
             }
         }
-    
+        console.log(111, H.current.value)
 
 
         axios.get('https://' + config.GCP_EXT_IP + '/grass_1').then(res => { 
@@ -923,7 +1031,8 @@ export default function DashboardContent() {
                         console.log('--> grass_4', res.data)
                         axios.get('https://' + config.GCP_EXT_IP + '/grass_5').then(res => {
                             console.log('--> grass_5', res.data)
-                            axios.get('https://' + config.GCP_EXT_IP + '/grass_6').then(res => {
+                            var HH = parseInt(H.current.value)
+                            axios.get('https://' + config.GCP_EXT_IP + '/grass_6', { params: { 'H': HH } }).then(res => {
                                 console.log('--> grass_6', res.data)
                                 axios.get('https://' + config.GCP_EXT_IP + '/grass_7').then(res => {
                                     console.log('--> grass_7', res.data)
@@ -939,6 +1048,7 @@ export default function DashboardContent() {
                                                         .then(res => { 
                                                             if (res.data !== 0) { 
                                                                 console.log('--> grass_12a', res.data)
+                                                                res_data_fire_a = res.data
                                                                 var layer = L.geoJSON(res.data, { fillColor: 'red', weight: 2, opacity: 1, color: 'red', fillOpacity: 0.7 })
                                                                 assess_fire.push(res.data)
                                                                 list_fire_pred_layer.push(layer)
@@ -949,6 +1059,7 @@ export default function DashboardContent() {
                                                     axios.get('https://' + config.GCP_EXT_IP + '/grass_12b')
                                                         .then(res => {
                                                             console.log('--> grass_12b', res.data)
+                                                            res_data_fire_b = res.data
                                                             if (res.data !== 0) {
                                                                 var layer = L.geoJSON(res.data, { fillColor: 'orange', weight: 2, opacity: 1, color: 'orange', fillOpacity: 0.7 })
                                                                 assess_fire.push(res.data)
@@ -960,6 +1071,7 @@ export default function DashboardContent() {
                                                     axios.get('https://' + config.GCP_EXT_IP + '/grass_12c')
                                                         .then(res => {
                                                             console.log('--> grass_12c', res.data)
+                                                            res_data_fire_c = res.data
                                                             if (res.data !== 0) {
                                                                 var layer = L.geoJSON(res.data, { fillColor: 'yellow', weight: 2, opacity: 1, color: 'yellow', fillOpacity: 0.7 })
                                                                 list_fire_pred_layer.push(layer)
@@ -1033,16 +1145,56 @@ export default function DashboardContent() {
 
 
 
+    const start_build_2 = () => {
+        console.log('start_build_2')
+
+        axios.get(config.COLAB_IP + '/build_2', { params: { 'lng1': lng1, 'lng2': lng2, 'lat1': lat1, 'lat2': lat2 } }, {'timeout':10*60*1000}).then(res => {
+            
+            var x = res.data
+            console.log(321, x)
+
+            if (x==0) {
+                console.log('build_2 empty')
+                alert('build_2 empty')
+            } else {
+                tmp_build_2 = L.geoJSON(x, { fillColor: 'green', weight: 2, opacity: 1, color: 'green', fillOpacity: 0.7 })
+                // console.log(22223)
+                // console.log(x['features'])
+                // console.log(22224)
+                // console.log(x['features'])
+                // console.log(22225)
+                // console.log(x['features'][0])
+                // console.log(22226)
+                // console.log(x['features'][0]['type'])
+                console.log(22226)
+                console.log(x['features'][0]['geometry']['type'])
+                console.log(22228)
+                console.log(x['features'][0]['geometry']['coordinates'])
+                console.log(22227)
+                // console.log(x['features'][0]['geometry']['coordinates'])
+    
+                show_build_2 = !show_build_2
+                tmp_build_2.addTo(map)
+                if (show_build_2) {
+                    tmp_build_2.addTo(map)
+                } else {
+                    map.removeLayer(tmp_build_2)
+                }
+            }
+
+
+            console.log('start_build_2 done')
+        })
+    }
+
     const start_build = () => {
         console.log('start_build --> ', lat1, lat2, lng1, lng2)
         
-        var path_build = 'http://0df8-35-185-176-237.ngrok.io/build'
-        
-        
         var x = 1
-        axios.get(path_build, { params: { 'lng1': lng1, 'lng2': lng2, 'lat1': lat1, 'lat2': lat2 } }).then(res => { 
+        axios.get(config.COLAB_IP + '/build', { params: { 'lng1': lng1, 'lng2': lng2, 'lat1': lat1, 'lat2': lat2 } }, {'timeout':10*60*1000}).then(res => {
             
             console.log(11111)
+            // res_data_build = res_data
             res.data['crs'] = { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } }
             x = res.data
             console.log(x)
@@ -1110,7 +1262,7 @@ export default function DashboardContent() {
         
         
         
-
+        console.log('start_build done')
         
         
         
@@ -1241,8 +1393,10 @@ export default function DashboardContent() {
                                         {/* <Typography component="h1" variant="h5">สิ่งปลกคลุมดิน (Land Cover)</Typography> */}
                                         <FormControl sx={{ m: 1, minWidth: 250 }}>
                                             <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} onClick={submit_fire_break} >ยืนยันข้อมูลแนวป้องกันไฟ</Button>
+                                            <TextField required type='number' fullWidth variant="standard" inputRef={H} helperText="........" />
                                             <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} onClick={start_fire_pred} >การลุกลามของไฟ</Button>
                                             <Button type="submit" fullWidth variant="contained" sx={{ mt: 1, mb: 2 }} onClick={start_build} >พื้นที่ชุมชน</Button>
+                                            <Button type="submit" fullWidth variant="contained" sx={{ mt: 1, mb: 2 }} onClick={start_build_2} >สถานที่สำคัญ</Button>
                                             <Button type="submit" fullWidth variant="contained" sx={{ mt: 1, mb: 2 }} onClick={damage_assess} >ประเมินผลกระทบ</Button>
                                             {/* <Button type="submit" fullWidth variant="contained" sx={{ mt: 1, mb: 2 }} onClick={import_land_cover} >นำเข้าข้อมูลแบบจำลองเชื้อเพลิง</Button> */}
                                             {/* <TextField required type='string' fullWidth variant="standard" inputRef={value_land_cover_list} helperText="เลือกข้อมูลแบบจำลองเชื้อเพลิง" /> */}
