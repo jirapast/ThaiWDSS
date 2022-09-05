@@ -25,4 +25,4 @@ yarn-error.log*
 
 /src/config.json
 
-grass_server.py
+*.py
