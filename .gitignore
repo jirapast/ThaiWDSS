@@ -25,4 +25,4 @@ yarn-error.log*
 
 /src/config.json
 
-*.py
+/python_files
