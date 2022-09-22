@@ -326,7 +326,7 @@ export default function DashboardContent() {
     // 
     const value_wind_spe = useRef()
     const value_wind_dir = useRef()
-    const H = useRef()
+    const H = useRef(1)
     
 
     // 
@@ -590,17 +590,17 @@ export default function DashboardContent() {
             <div>
                 <TextField label="Search field" type="search" inputRef={value_search} />
                 <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_search_A} >Search</Button>
-                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_search_B} >Search_B</Button>
                 {/* <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_geometry}>     </Button> */}
                 {/* <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_aoi}>submit_aoi</Button> */}
+
+                
+                {/* <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_search_B} >Search_B</Button>
                 <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={submit_aoi}>submit_aoi</Button>
-                
                 <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={click_show_aoi}>click_show_aoi</Button>
-
                 <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={click_show_fire}>click_show_fire</Button>
-                
-                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={click_show_build}>click_show_build</Button>
+                <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={click_show_build}>click_show_build</Button> */}
 
+                
                 {/* <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={save}>save</Button> */}
                 
                 {/* <Button type="submit" variant="contained" sx={{ ml: 2, mr: 1 }} onClick={list}>list</Button> */}
@@ -1309,7 +1309,7 @@ export default function DashboardContent() {
                         <Typography component="h1" variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>Dashboard</Typography>
                         <Box sx={{ minWidth: 120 }}>
                             <FormControl fullWidth>
-                                <InputLabel>ภาษา</InputLabel>
+                                <InputLabel>Languages</InputLabel>
                                 <Select value={lang} onChange={handleChangeLang} >
                                     <MenuItem value={10}>EN</MenuItem>
                                     <MenuItem value={20}>TH</MenuItem>
@@ -1363,11 +1363,11 @@ export default function DashboardContent() {
                             <Grid item xs={4}>
                                 <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
                                     <Box sx={{ marginTop: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', }}>
-                                        <Typography component="h1" variant="h5"> ข้อมูลสภาพอากาศ </Typography>
+                                        <Typography component="h1" variant="h5"> Weather Data </Typography>
                                         <FormControl sx={{ m: 1, minWidth: 250 }}>
-                                            <TextField required type='number' fullWidth variant="standard" inputRef={value_wind_spe} helperText="ทิศทางลม (องศาตามเข็มนาฬิกาจากทิศเหนือ)" />
-                                            <TextField required type='number' fullWidth variant="standard" inputRef={value_wind_dir} helperText="ความเร็วลม (กิโลเมตรต่อชั่วโมง)" />
-                                            <Button type="submit" fullWidth variant="contained" sx={{ mt: 1, mb: 2 }} onClick={submit_weather}>ยืนยันข้อมูลสภาพอากาศ</Button>
+                                            <TextField required type='number' fullWidth variant="standard" inputRef={value_wind_spe} helperText="Wind direction (degree clock-wise from the North)" />
+                                            <TextField required type='number' fullWidth variant="standard" inputRef={value_wind_dir} helperText="Wind speed (km/hr)" />
+                                            <Button type="submit" fullWidth variant="contained" sx={{ mt: 1, mb: 2 }} onClick={submit_weather}>Submit weather data</Button>
                                         </FormControl>
                                     </Box>
                                 </Paper>
@@ -1376,12 +1376,13 @@ export default function DashboardContent() {
                             <Grid item xs={4}>
                                 <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
                                     <Box sx={{ marginTop: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', }}>
-                                        <Typography component="h1" variant="h5"> ข้อมูลจุดกำเนิดไฟป่า </Typography>
+                                        <Typography component="h1" variant="h5"> Active Fire Data </Typography>
                                         <p></p>
-                                        <p>ระบุตำแหน่งแหล่งกำเนิดไฟป่า โดยการวาดรูปทรงบนแผนที่</p>
+                                        {/* <p>ระบุตำแหน่งแหล่งกำเนิดไฟป่า โดยการวาดรูปทรงบนแผนที่</p> */}
+                                        <p>Input active fire by drawing polygon on the map</p>
                                         <FormControl sx={{ m: 1, minWidth: 250 }}>
-                                            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} onClick={submit_hotspot} >ยืนยันข้อมูลจุดกำเนิดไฟป่า</Button>
-                                            <Button type="submit" fullWidth variant="contained" sx={{ mt: 1, mb: 2 }} onClick={import_hotspot}>นำเข้าข้อมูลจุดความร้อนจาก FIRMS</Button>
+                                            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} onClick={submit_hotspot}>Submit active fire data</Button>
+                                            <Button type="submit" fullWidth variant="contained" sx={{ mt: 1, mb: 2 }} onClick={import_hotspot}>import hotspot data from FIRMS</Button>
                                         </FormControl>
                                     </Box>
                                 </Paper>
@@ -1392,12 +1393,12 @@ export default function DashboardContent() {
                                     <Box sx={{ marginTop: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', }}>
                                         {/* <Typography component="h1" variant="h5">สิ่งปลกคลุมดิน (Land Cover)</Typography> */}
                                         <FormControl sx={{ m: 1, minWidth: 250 }}>
-                                            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} onClick={submit_fire_break} >ยืนยันข้อมูลแนวป้องกันไฟ</Button>
-                                            <TextField required type='number' fullWidth variant="standard" inputRef={H} helperText="........" />
-                                            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} onClick={start_fire_pred} >การลุกลามของไฟ</Button>
-                                            <Button type="submit" fullWidth variant="contained" sx={{ mt: 1, mb: 2 }} onClick={start_build} >พื้นที่ชุมชน</Button>
-                                            <Button type="submit" fullWidth variant="contained" sx={{ mt: 1, mb: 2 }} onClick={start_build_2} >สถานที่สำคัญ</Button>
-                                            <Button type="submit" fullWidth variant="contained" sx={{ mt: 1, mb: 2 }} onClick={damage_assess} >ประเมินผลกระทบ</Button>
+                                            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} onClick={submit_fire_break} >submit firebreak</Button>
+                                            <TextField required type='number' fullWidth variant="standard" inputRef={H} helperText="prediction in ... hours" />
+                                            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} onClick={start_fire_pred} >wildfire spread prediction</Button>
+                                            <Button type="submit" fullWidth variant="contained" sx={{ mt: 1, mb: 2 }} onClick={start_build} >building detection</Button>
+                                            <Button type="submit" fullWidth variant="contained" sx={{ mt: 1, mb: 2 }} onClick={start_build_2} >OpenStreetMap</Button>
+                                            <Button type="submit" fullWidth variant="contained" sx={{ mt: 1, mb: 2 }} onClick={damage_assess} >Damage assessment</Button>
                                             {/* <Button type="submit" fullWidth variant="contained" sx={{ mt: 1, mb: 2 }} onClick={import_land_cover} >นำเข้าข้อมูลแบบจำลองเชื้อเพลิง</Button> */}
                                             {/* <TextField required type='string' fullWidth variant="standard" inputRef={value_land_cover_list} helperText="เลือกข้อมูลแบบจำลองเชื้อเพลิง" /> */}
                                             {/* <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} onClick={submit_all_land_cover} > ยืนยันข้อมูลสิ่งปลกคลุมดิน</Button>
